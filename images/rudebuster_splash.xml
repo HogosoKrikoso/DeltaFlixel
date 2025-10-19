@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="rudebuster_splash.png">
+<SubTexture name="idle0000" x="0" y="0" width="840" height="640" frameX="0" frameY="0" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0000" x="1145" y="640" width="94" height="92" frameX="-382" frameY="-268" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0001" x="1047" y="640" width="98" height="95" frameX="-391" frameY="-256" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0002" x="945" y="640" width="102" height="100" frameX="-395" frameY="-248" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0003" x="842" y="640" width="103" height="104" frameX="-399" frameY="-241" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0004" x="728" y="640" width="114" height="117" frameX="-404" frameY="-225" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0005" x="605" y="640" width="123" height="125" frameX="-409" frameY="-213" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0006" x="475" y="640" width="130" height="135" frameX="-414" frameY="-199" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0007" x="339" y="640" width="136" height="143" frameX="-418" frameY="-190" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0008" x="840" y="0" width="565" height="553" frameX="0" frameY="0" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0009" x="185" y="640" width="154" height="175" frameX="-424" frameY="-163" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0010" x="0" y="640" width="185" height="204" frameX="-411" frameY="-141" frameWidth="800" frameHeight="600" />
+<SubTexture name="play0011" x="0" y="0" width="840" height="640" frameX="0" frameY="0" frameWidth="800" frameHeight="600" />
+</TextureAtlas>
