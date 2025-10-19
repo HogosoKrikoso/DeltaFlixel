@@ -1,0 +1,711 @@
+import funkin.menus.ModSwitchMenu;
+import flixel.ui.FlxBar.FlxBarFillDirection;
+import flixel.text.FlxTextBorderStyle;
+import flixel.FlxCamera.FlxCameraFollowStyle;
+import haxe.io.Path;
+import openfl.text.TextField;
+import flixel.FlxState;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.util.FlxMath;
+import funkin.backend.system.Controls;
+import funkin.backend.system.Paths;
+import flixel.FlxCamera;
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.display.FlxGridOverlay;
+import flixel.ui.FlxBar;
+import FunkinBitmapText;
+
+public var onBattle:Bool = true;
+
+importScript("data/scripts/eventSystem");
+importScript("data/scripts/DeltaCharacter");
+	
+public var characters:Array = [];
+public var enemies:Array = [];
+
+var turn:Int = 0;
+var state = "actions";
+var textOptionCase = "";
+
+var confirmSound:FlxSound = FlxG.sound.load(Paths.sound("menu/confirm"));
+public var scrollSound:FlxSound = FlxG.sound.load(Paths.sound("menu/scroll"));
+var cancelSound:FlxSound = FlxG.sound.load(Paths.sound("menu/cancel"));
+var rudeBusterMusic:FlxSound = FlxG.sound.load(Paths.music("RudeBuster"));
+rudeBusterMusic.looped = true;
+rudeBusterMusic.volume = 0.54;
+rudeBusterMusic.play();
+
+var hpBar:FlxBar;
+
+public var battleGrid = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+public var overworldFront = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+public var camUI = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+for (u in [battleGrid, overworldFront, camUI]) {
+	u.bgColor = 0;
+	FlxG.cameras.add(u, false);
+}
+
+public var tensionPoints:Float = 0;
+
+public var undos:Array<Float> = [];
+public var char_acts:Array = [];
+
+var fightTurn = 0;
+var curAction:Int = 0;
+var curSel:Int = 0;
+var targetCharacter:Int = 0;
+var menuItems:Array<String> = ["fight", "act", "item", "mercy", "defend"];
+var groupMenuItems:FlxTypedGroup = [];
+var textOptions:FlxTypedGroup = [];
+var fightBoxes:FlxTypedGroup = [];
+
+public var gridBack:FlxBackdrop = new FlxBackdrop(Paths.image('deltaruneBackground'));
+gridBack.velocity.set(30, 30);
+gridBack.alpha = 0.5;
+gridBack.cameras = [battleGrid];
+add(gridBack);
+public var grid:FlxBackdrop = new FlxBackdrop(Paths.image('deltaruneBackground'));
+grid.velocity.set(-30, -30);
+grid.cameras = [battleGrid];
+add(grid);
+
+public var dialogue:FlxText;
+
+#if mobile
+addTouchPad('LEFT_FULL', 'A_B_C');
+addTouchPadCamera(false);
+#end
+
+function reverseMin(v, max){
+	if(v > max)
+		return max + (max - v);
+	else
+		return v;
+}
+
+function playSound(path, force) {
+	var sound = FlxG.sound.load(Paths.sound(path));
+	sound.volume = 1;
+	sound.play(force);
+}
+
+class FightBox
+{
+	public var x = 0;
+	public var y = 0;
+	public var alpha:Float = 0;
+	public var visible = true;
+	public var accuracy = 0;
+	public var canUpdate = false;
+	public var canPress = false;
+	public var pressed = false;
+	public var icon:FlxSprite;
+	public var box:FlxSprite;
+	public var bar:FlxSprite;
+	public var barAlpha:Float = 1;
+	public function new(xPos, yPos, character)
+	{
+		x = xPos;
+		y = yPos;
+		icon = new FlxSprite().loadGraphic(Paths.image('ui/icons/' + character.icon));
+		icon.cameras = [camUI];
+		icon.scale.set(2.5,2.5);
+		icon.updateHitbox();
+		box = new FlxSprite().loadGraphic(Paths.image('ui/boxFight'));
+		box.cameras = [camUI];
+		box.color = character.color;
+		bar = new FlxSprite().makeGraphic(18, 76,FlxColor.WHITE);
+		bar.cameras = [camUI];
+	}
+	
+	public function resetX()
+		bar.offset.x = 0;
+		
+	public function update(keyPress)
+	{
+		icon.alpha = box.alpha = alpha;
+		bar.alpha = alpha*barAlpha;
+		icon.visible = box.visible = bar.visible = visible;
+		icon.setPosition(x,y);
+		box.setPosition(x+100,y);
+		bar.setPosition(box.x+box.width,y+4);
+		if (canUpdate) {
+			accuracy = reverseMin(bar.offset.x/box.width, 1);
+			if (keyPress && bar.offset.x >= 50 && canPress && !pressed)
+				pressed = true;
+			if (bar.offset.x >= (box.width+75)) {
+				accuracy = 0;
+				pressed = true;
+				canUpdate = false;
+				canPress = false;
+			}
+			if (pressed) {
+				if (barAlpha > 0)
+					barAlpha -= 0.1;
+				bar.scale.x += 0.1;
+				bar.scale.y += 0.1;
+			}else{
+				bar.offset.x += 10;
+				barAlpha = 1;
+				bar.scale.set(1,1);
+			}
+		}
+	}
+}
+
+public function doTextOptions(stuff) {
+	curSel = 0;
+	for (that in textOptions)
+		remove(that.obj, true);
+	textOptions = [];
+	if (stuff != null) {
+		for (daOption in stuff) {
+			text = new FlxText(0, -55, 0, daOption.text).setFormat(Paths.font("determination.ttf"), 55, FlxColor.WHITE, "center");
+			text.cameras = [camUI];
+			text.x = -text.width;
+			textOptions.push({obj: text, data: daOption});
+			add(text);
+		}
+	}
+}
+
+function create() {
+	
+	tpBar = new FlxBar(0, 0, FlxBarFillDirection.RIGHT_TO_LEFT, 859, 100, null, '', 0, 100);
+	tpBar.createImageBar(Paths.image('ui/tpBar_empty'), Paths.image('ui/tpBar_filled'));
+	tpBar.setPosition(-300,310);
+	tpBar.angle = 90;
+	tpBar.scale.set(0.5, 0.5);
+	tpBar.antialiasing = false;
+	tpBar.numDivisions = 500;
+	tpBar.cameras = [camUI];
+	add(tpBar);
+	
+	tpLabel = new FlxSprite().loadGraphic(Paths.image('ui/tp'));
+	tpLabel.scale.set(2,2);
+	tpLabel.updateHitbox();
+	tpLabel.setPosition(35, 200);
+	tpLabel.cameras = [camUI];
+	add(tpLabel);
+	
+	tpText = new FlxText(32, 300);
+	tpText.setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+	tpText.borderSize = 3;
+	tpText.borderQuality = 1;
+	tpText.fieldWidth = tpBar.x;
+	tpText.cameras = [camUI];
+	add(tpText);
+	
+	hudBase = new FlxSprite().loadGraphic(Paths.image('ui/base'));
+	hudBase.scale.set(FlxG.width,1.25);
+	hudBase.updateHitbox();
+	hudBase.y = FlxG.height - hudBase.height;
+	hudBase.cameras = [camUI];
+	add(hudBase);
+	
+	for (i in 0...menuItems.length) {
+		item = new FlxSprite().loadGraphic(Paths.image('ui/' + menuItems[i]));
+		item.cameras = [camUI];
+		item.scale.set(2, 2);
+		item.updateHitbox();
+		item.x = ((FlxG.width/2) - (40*menuItems.length)) + (80*i);
+		item.y = hudBase.y - 75;
+		item.color = 0xFFFF7F00;
+		groupMenuItems.push(item);
+		add(item);
+		item.ID = menuItems[i];
+	}
+	
+	dialogue = new FlxText(45, hudBase.y + 100);
+	dialogue.setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, 0xFF000088);
+	dialogue.fieldWidth = FlxG.width - (dialogue.x+45);
+	dialogue.borderSize = 5;
+	dialogue.text = "* cheezborger";
+	dialogue.cameras = [camUI];
+	add(dialogue);
+	
+	hpBar = new FlxBar((FlxG.width / 2), hudBase.y + 46, FlxBar.FILL_LEFT_TO_RIGHT, 175, 18, null, "", 0, 1);
+	hpBar.cameras = [camUI];
+	add(hpBar);
+	
+	hpLabel = new FlxSprite().loadGraphic(Paths.image('ui/hp'));
+	hpLabel.scale.set(2.25,2.25);
+	hpLabel.updateHitbox();
+	hpLabel.setPosition(hpBar.x - (hpLabel.width + 14), hpBar.y);
+	hpLabel.cameras = [camUI];
+	add(hpLabel);
+	
+	hpText = new FlxText(hpBar.x, hudBase.y + 13);
+	hpText.setFormat(Paths.font("small.ttf"), 29, FlxColor.WHITE, "right");
+	hpText.fieldWidth = hpBar.width;
+	hpText.cameras = [camUI];
+	add(hpText);
+	
+	name = new FunkinBitmapText(0, hudBase.y + 26, "name", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 11, 18, "", 6);
+	name.cameras = [camUI];
+	add(name);
+	
+	icon = new FlxSprite();
+	icon.cameras = [camUI];
+	add(icon);
+	
+	textOptHP = new FlxBar(10,10, FlxBar.FILL_LEFT_TO_RIGHT, 200, 50, null, "", 0, 1);
+	textOptHP.cameras = [camUI];
+	textOptHP.createFilledBar(0xFFAA0000, 0xFF00FF00);
+	add(textOptHP);
+	
+	textOptHPText = new FlxText(13, 13);
+	textOptHPText.setFormat(Paths.font("determination.ttf"), 50, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	textOptHPText.cameras = [camUI];
+	textOptHPText.borderSize = 3;
+	add(textOptHPText);
+	
+	textOptSpare = new FlxBar(FlxG.width - 210, 20, FlxBar.FILL_LEFT_TO_RIGHT, 200, 50, null, "", 0, 1);
+	textOptSpare.cameras = [camUI];
+	textOptSpare.createFilledBar(0xFFAA0000, 0xFFFFF00);
+	add(textOptSpare);
+	
+	textOptSpareText = new FlxText(FlxG.width - 197, 23).setFormat(Paths.font("determination.ttf"), 50, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	textOptSpareText.cameras = [camUI];
+	textOptSpareText.borderSize = 3;
+	add(textOptSpareText);
+	
+	textOptDescription = new FlxText(FlxG.width - 250, hudBase.y + 90, 250).setFormat(Paths.font("determination.ttf"), 50, FlxColor.GRAY, "left");
+	textOptDescription.cameras = [camUI];
+	textOptDescription.borderSize = 3;
+	add(textOptDescription);
+	
+	textOptTP = new FlxText(FlxG.width - 250, FlxG.height - 60, 250).setFormat(Paths.font("determination.ttf"), 50, FlxColor.ORANGE, "left");
+	textOptTP.cameras = [camUI];
+	textOptTP.borderSize = 3;
+	add(textOptTP);
+	
+	soul = new FlxSprite(0,0).loadGraphic(Paths.image('ui/soul'));
+	soul.scale.set(3, 3);
+	soul.updateHitbox();
+	soul.cameras = [camUI];
+	add(soul);
+	
+	manageEventList("textoChistoso");
+	clearEventsList();
+	addEventToList(() -> textEvent(dialogue, "* Now HaxeFlixel?! You're goin crazy bro!", false, scrollSound, 0.05));
+	handleEvent();
+	
+	/*if (chars != null) 
+	characters = chars;
+	else {*/
+		importScript("deltamod/chars/kris");
+		importScript("deltamod/chars/susie");
+		importScript("deltamod/chars/ralsei");
+		//importScript("deltamod/chars/noelle");
+	//}
+	
+	/*if (_enemies != null) 
+		enemies = _enemies;
+	else {*/
+		importScript("deltamod/enemies/cheese");
+		importScript("deltamod/enemies/cheese");
+	//}
+	var i = 0;
+	for (character in characters) {
+		if (character.sprite != null)
+			add(character.sprite);
+		undos.push(0);
+		char_acts.push("");
+		var box = new FightBox((FlxG.width/2)-240, 25 + 80*i, character);
+		add(box.icon);
+		add(box.box);
+		add(box.bar);
+		fightBoxes.push(box);
+		i += 1;
+	}
+	for (enemy in enemies) if (enemy.sprite != null)
+		add(enemy.sprite);
+}
+
+public function changeAction(number:Int = 0){
+	curAction = FlxMath.wrap(curAction + number, 0, menuItems.length-1);
+	scrollSound.play(true);
+}
+public function changeSel(number:Int = 0){
+	curSel = FlxMath.wrap(curSel + number, 0, textOptions.length-1);
+	scrollSound.play(true);
+}
+function update() {
+	if (touchPad.buttonC.justPressed) FlxG.resetState();
+	if (state != "enemyAttack")
+		targetCharacter = turn;
+	tensionPoints = FlxMath.bound(tensionPoints, 0, 100);
+	targetCharacter = FlxMath.bound(targetCharacter, 0, characters.length-1);
+	var char = characters[targetCharacter];
+	if (name != null) {
+		name.text = char.name.toUpperCase();
+		name.y = hudBase.y + 26;
+		name.x = hpBar.x - (name.width + 64);
+	}
+	if (icon != null) {
+		icon.loadGraphic(Paths.image('ui/icons/' + char.icon));
+		icon.scale.set(2,2);
+		icon.updateHitbox();
+		icon.setPosition(name.x - (icon.width + 12), hudBase.y + 14);
+	}
+	if (tpText != null) {
+		if (tensionPoints >= 100) {
+			tpText.text = "M\n A\n  X";
+			tpText.color = FlxColor.YELLOW;
+		} else {
+			tpText.text = Math.floor(tensionPoints) + "\n%";
+			tpText.color = FlxColor.WHITE;
+		}
+	}
+	/*if (tpBar != null) {
+		tpBar.percent = CoolUtil.fpsLerp(tpBar.percent, tensionPoints, 0.1);
+	}*/
+	if (hpBar != null) {
+		hpBar.createFilledBar(0xFFAA0000, char.color);
+		hpBar.value = char.hp/char.maxHP;
+	}
+	if (hpText != null) {
+		hpText.text = char.hp + "/" + char.maxHP;
+		hpText.color = char.hp <= 0 ? FlxColor.RED : (char.hp <= char.maxHP/4 ? FlxColor.YELLOW : FlxColor.WHITE);
+	}
+	if (state == "actions") {
+		for (i=>enemy in enemies) {
+			if (enemy.hp <= 0) {
+				enemies = removeFromArray(i, enemies);
+			}
+		}
+		dialogue.visible = true;
+		if (controls.BACK) {
+			if (turn > 0) {
+				cancelSound.play(true);
+				prevTurn();
+			}
+		}
+		characters[turn].sprite.playAnim("idle", false);
+		if (controls.ACCEPT) {
+			confirmSound.play(true);
+			switch (menuItems[curAction]) {
+				case "fight":
+					state = "select";
+					textOptionCase = "fight";
+					characters[turn].choices[0] = 0;
+					doTextOptions(getEnemyOptions());
+				case "act":
+					if (characters[turn].canMagic == true) {
+						state = "select";
+						textOptionCase = "magic";
+						characters[turn].choices[0] = 1;
+						doTextOptions(characters[turn].baseSpells);
+					}else{
+						state = "select";
+						textOptionCase = "act";
+						characters[turn].choices[0] = 1;
+						doTextOptions(getEnemyOptions());
+					}
+				case "defend":
+					characters[turn].choices[0] = 4;
+					tensionPoints += 16;
+					undos[turn] = 16;
+					characters[turn].sprite.playAnim("defend", false);
+					nextTurn();
+			}
+			return;
+		}
+		
+		if (controls.LEFT_P) {
+			changeAction(-1);
+		}
+		
+		if (controls.RIGHT_P) {
+			changeAction(1);
+		}
+		
+		for (i=>item in groupMenuItems) {
+			if(i == curAction) item.color = FlxColor.YELLOW;
+			else item.color = 0xFFFF7F00;
+			var id = menuItems[i];
+			if (id == "act") {
+				if (characters[turn].canMagic) item.loadGraphic(Paths.image('ui/magic'));
+				else item.loadGraphic(Paths.image('ui/act'));
+			}
+		}
+	} else dialogue.visible = state == "events" || state == "win";
+	if (state == "select") {
+		var data = textOptions[curSel].data;
+		if (data.tp == null) data.tp = 0;
+		var text = textOptions[curSel].obj;
+		textOptDescription.text = "";
+		textOptTP.text = "";
+		if (data.hp != null && data.maxHP != null) {
+			textOptHP.value = FlxMath.bound(data.hp/data.maxHP, 0, 1);
+			textOptHPText.text = Math.floor(FlxMath.bound(data.hp/data.maxHP, 0, 1)*100) + "%";
+			textOptHP.visible = textOptHPText.visible = true;
+		} else {
+			textOptHP.visible = textOptHPText.visible = false;
+			if (data.tp > 0)
+				textOptTP.text = data.tp + "% TP";
+			if (data.info != null)
+				textOptDescription.text += data.info;
+		}
+		textOptSpare.setPosition(FlxG.width-(textOptSpare.width+10), text.y-0);
+		textOptSpareText.setPosition(textOptSpare.x+3, textOptSpare.y+3);
+		textOptHP.setPosition(textOptSpare.x-(textOptHP.width+30), textOptSpare.y);
+		textOptHPText.setPosition(textOptHP.x+3, textOptHP.y+3);
+		soul.x = text.x - 60;
+		soul.y = text.y - 5;
+		if (data.spare != null) {
+			textOptSpare.value = FlxMath.bound(data.spare/100, 0, 1);
+			textOptSpareText.text = FlxMath.bound(data.spare, 0, 100) + "%";
+			textOptSpare.visible = textOptSpareText.visible = true;
+		} else {
+			textOptSpare.visible = textOptSpareText.visible = false;
+		}
+		if (controls.BACK) {
+			cancelSound.play(true);
+			switch(textOptionCase) {
+				default:
+					state = "actions";
+					characters[turn].choices[0] = 0;
+					doTextOptions([]);
+				case "magic2":
+					char_acts[turn] = "";
+					state = "select";
+					textOptionCase = "magic";
+					characters[turn].choices[2] = 0;
+					doTextOptions(characters[turn].baseSpells);
+					if (undos[turn] != 0) {
+						tensionPoints -= undos[turn];
+						undos[turn] = 0;
+					}
+				case "act2":
+					state = "select";
+					textOptionCase = "act";
+					characters[turn].choices[1] = 0;
+					doTextOptions(getEnemyOptions());
+					if (undos[turn] != 0) {
+						tensionPoints -= undos[turn];
+						undos[turn] = 0;
+					}
+			}
+		}
+		if (controls.ACCEPT) {
+			confirmSound.play(true);
+			switch(textOptionCase) {
+				case "fight":
+					characters[turn].sprite.playAnim("attackprep", false);
+				case "magic2":
+					characters[turn].sprite.playAnim("magicprep", false);
+				case "act2":
+					characters[turn].sprite.playAnim("actprep", false);
+			}
+			switch(textOptionCase) {
+				default:
+					characters[turn].choices[1] = curSel;
+					nextTurn();
+					doTextOptions([]);
+				case "act":
+					characters[turn].choices[1] = curSel;
+					state = "select";
+					textOptionCase = "act2";
+					doTextOptions(enemies[curSel].acts.get(characters[turn].name));
+				case "act2":
+					if (tensionPoints >= data.tp) {
+						char_acts[turn] = data.func;
+						tensionPoints -= data.tp;
+						undos[turn] = -data.tp;
+						characters[turn].choices[2] = curSel;
+						nextTurn();
+						doTextOptions([]);
+					}
+				case "magic":
+					if (tensionPoints >= data.tp) {
+						char_acts[turn] = data.func;
+						tensionPoints -= data.tp;
+						undos[turn] = -data.tp;
+						characters[turn].choices[2] = curSel;
+						state = "select";
+						textOptionCase = "magic2";
+						doTextOptions(getEnemyOptions());
+					}
+			}
+			return;
+		}
+		soul.visible = true;
+		updateTextOptions();
+	} else {
+		soul.visible = false;
+		textOptHP.visible = textOptHPText.visible = textOptSpare.visible = textOptSpareText.visible = false;
+		textOptDescription.text = "";
+		textOptTP.text = "";
+	}
+	if (state == "FightState") {
+		for (i=>box in fightBoxes) {
+			box.alpha = CoolUtil.fpsLerp(characters[i].choices[0] == 0 ? 1 : 0, box.alpha, 0.5);
+			box.canUpdate = characters[i].choices[0] == 0;
+			box.canPress = (i == fightTurn);
+			var enemy = enemies[characters[i].choices[1]];
+			if (enemy.hp <= 0)
+				characters[i].choices[0] = -1;
+			if (i == fightTurn && characters[i].choices[0] != 0)
+				fightTurn += 1;
+			if (i == fightTurn && box.pressed) {
+				if (box.accuracy >= 0.95)
+					box.bar.color = FlxColor.YELLOW;
+				playSound("snd_slash", true);
+				enemy.hp -= Math.floor(120*box.accuracy);
+				enemy.sprite.playAnim("hurt", true);
+				new FlxTimer().start(0.32, (tmr) -> {
+					enemy.sprite.playAnim("idle", true);
+					handleEvent();
+				});
+				enemy.shake = 10;
+				characters[i].sprite.playAnim("attack", false);
+				fightTurn += 1;
+			}
+		}
+		if (fightTurn >= characters.length) {
+			state = "actions";
+			turn = 0;
+			for (character in characters) {
+				character.sprite.playAnim("idle", true);
+				character.choices = [0,0,0,0,0,0];
+			}
+		}
+	}else{
+		for (box in fightBoxes) {
+			box.canUpdate = false;
+			box.alpha = CoolUtil.fpsLerp(0, box.alpha, 0.5);
+		}
+	}
+	for (i=>character in characters) {
+		if (character.sprite != null) {
+			character.sprite.y = CoolUtil.fpsLerp(150 + ((400/characters.length) * i), character.sprite.y, 0.5);
+			character.sprite.x = CoolUtil.fpsLerp(275 - ((25/characters.length) * i), character.sprite.x, 0.5) + FlxG.random.float(-character.shake,character.shake);
+			if (character.shake > 0) character.shake -= 0.1;
+		}
+	}
+	for (i=>enemy in enemies) {
+		if (enemy.hp <= 0) {
+			FlxTween.tween(enemy.sprite, {x: FlxG.width-(enemy.sprite.width+25)}, 0.5, {ease: FlxEase.quadOut});
+			enemy.sprite.playAnim("dead");
+			new FlxTimer().start(0.5, (x) -> {
+				if (enemy.sprite != null) FlxTween.tween(enemy.sprite, {x: FlxG.width*1.1}, 0.32);
+			});
+		} else {
+			if (enemy.sprite != null) {
+				enemy.sprite.y = CoolUtil.fpsLerp(150 + ((400/enemies.length) * i), enemy.sprite.y, 0.5);
+				enemy.sprite.x = CoolUtil.fpsLerp((FlxG.width - 320) + ((25/enemies.length) * i), enemy.sprite.x, 0.5) + FlxG.random.float(-enemy.shake,enemy.shake);
+				if (enemy.shake > 0) enemy.shake -= 0.25;
+			}
+		}
+	}
+	var deadChars = 0;
+	for (character in characters) {
+		if (character.hp <= 0) {
+			character.sprite.playAnim("dead", true);
+			deadChars += 1;
+		}else{
+			if (character.sprite.animation.name == "dead") {
+				character.sprite.playAnim("idle", true);
+			}
+		}
+	}
+	if (deadChars == characters.length) FlxG.resetState();
+	for (box in fightBoxes) box.update(controls.ACCEPT);
+	if (enemies.length <= 0 && state != "win") {
+		manageEventList("win");
+		addEventToList(() -> textEvent(dialogue, "You won!\n0 XP - 0 D$", false, scrollSound, 0.05));
+		/*addEventToList(() -> {
+			new FlxTimer().start(0.25, (s) -> {
+				dialogue.text += "\n";
+				textEvent(dialogue, "0 XP - 0 D$", true, scrollSound, 0.05);
+			});
+		});*/
+		handleEvent();
+		addEventToList(() -> {
+			conditionFunction = () -> {
+				return controls.ACCEPT;
+			};
+		});
+		state = "win";
+	}
+}
+
+function updateTextOptions() {
+	if (controls.UP_P) 
+		changeSel(-1);
+	if (controls.DOWN_P) 
+		changeSel(1);
+	var i = 0;
+	for (o in textOptions) {
+		var text = o.obj;
+		text.x = CoolUtil.fpsLerp(70, text.x, 0.5);
+		text.y = (hudBase.y + 95) + (60*(i-Math.max(curSel-2,0)));
+		if (text.y < (hudBase.y + 85))
+			text.visible = false;
+		else
+			text.visible = true;
+		if (o.data.tp == null || (o.data.tp != null && tensionPoints >= o.data.tp))
+			text.color = FlxColor.WHITE;
+		else
+			text.color = FlxColor.GRAY;
+		i += 1;
+	}
+}
+public function nextTurn() {
+	turn += 1;
+	if (turn >  characters.length-1)  {
+		state = "events";
+		manageEventList("postPlayerTurn");
+		clearEventsList();
+		for (i=>character in characters) {
+			var to_do = char_acts[i];
+			var enemy = enemies[character.choices[1]];
+			if (to_do != ""){
+				to_do(character, enemy);
+				char_acts[i] = "";
+			}
+		}
+		addEventToList(() -> {
+			fightTurn = 0;
+			for (i=>box in fightBoxes) {
+				box.resetX();
+				box.pressed = false;
+				box.bar.offset.x -= i*125;
+				box.bar.color = FlxColor.WHITE;
+			}
+			state = "FightState";
+		});
+		handleEvent();
+	} else
+		state = "actions";
+}
+
+public function prevTurn() {
+	turn -= 1;
+	if (undos[turn] != 0) {
+		tensionPoints -= undos[turn];
+		undos[turn] = 0;
+	}
+	char_acts[turn] = "";
+	characters[turn].choices = [0,0,0,0,0,0];
+	state = "actions";
+}
+
+public function getEnemyOptions() {
+	var t:Array<Dynamic> = [];
+	for (enemy in enemies) t.push({text: enemy.name, hp: enemy.hp, maxHP: enemy.maxHP, spare: enemy.spare});
+	return t;
+}
+
+public function removeFromArray(id, array) {
+	var t = [];
+	for (i=>stuff in array) if(i != id) 
+		t.push(stuff);
+	return t;
+}
+
+/*if (scripts != null) for (path in scripts)
+	importScript(path);*/
