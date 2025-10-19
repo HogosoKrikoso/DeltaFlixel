@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="knight.png">
+<SubTexture name="idle0000" x="543" y="486" width="108" height="105" frameX="-24" frameY="-31" frameWidth="117" frameHeight="115" />
+<SubTexture name="roar0000" x="663" y="312" width="116" height="103" frameX="-5" frameY="-19" frameWidth="89" frameHeight="85" />
+<SubTexture name="roar0001" x="663" y="0" width="117" height="104" frameX="-5" frameY="-18" frameWidth="89" frameHeight="85" />
+<SubTexture name="scrunch0000" x="478" y="593" width="89" height="85" frameX="-24" frameY="-21" frameWidth="100" frameHeight="93" />
+<SubTexture name="aurafarming0000" x="663" y="415" width="88" height="103" frameX="-21" frameY="-1" frameWidth="69" frameHeight="82" />
+<SubTexture name="drooping0000" x="479" y="217" width="88" height="107" frameX="-7" frameY="-7" frameWidth="63" frameHeight="82" />
+<SubTexture name="drooping0001" x="0" y="379" width="88" height="107" frameX="-7" frameY="-7" frameWidth="63" frameHeight="82" />
+<SubTexture name="drooping0002" x="88" y="379" width="88" height="107" frameX="-7" frameY="-7" frameWidth="63" frameHeight="82" />
+<SubTexture name="drooping0003" x="176" y="379" width="88" height="107" frameX="-7" frameY="-7" frameWidth="63" frameHeight="82" />
+<SubTexture name="auraturn0000" x="0" y="593" width="88" height="103" frameX="-21" frameY="-1" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0001" x="88" y="593" width="88" height="103" frameX="-21" frameY="-1" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0002" x="176" y="593" width="88" height="103" frameX="-21" frameY="-1" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0003" x="663" y="104" width="86" height="104" frameX="-22" frameY="-1" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0004" x="574" y="107" width="83" height="106" frameX="-24" frameY="-2" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0005" x="479" y="109" width="79" height="108" frameX="-22" frameY="-3" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0006" x="574" y="213" width="80" height="105" frameX="-19" frameY="-5" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0007" x="663" y="208" width="96" height="104" frameX="-1" frameY="-9" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0008" x="264" y="379" width="89" height="107" frameX="-6" frameY="-7" frameWidth="69" frameHeight="82" />
+<SubTexture name="auraturn0009" x="353" y="379" width="88" height="107" frameX="-7" frameY="-7" frameWidth="69" frameHeight="82" />
+<SubTexture name="droopup0000" x="441" y="379" width="88" height="107" frameX="-7" frameY="-7" frameWidth="63" frameHeight="82" />
+<SubTexture name="droopup0001" x="574" y="318" width="89" height="105" frameX="-6" frameY="-9" frameWidth="63" frameHeight="82" />
+<SubTexture name="droopup0002" x="453" y="486" width="90" height="106" frameX="-5" frameY="-8" frameWidth="63" frameHeight="82" />
+<SubTexture name="droopup0003" x="574" y="0" width="89" height="107" frameX="-5" frameY="-6" frameWidth="63" frameHeight="82" />
+<SubTexture name="droopup0004" x="0" y="269" width="91" height="110" frameX="-5" frameY="-3" frameWidth="63" frameHeight="82" />
+<SubTexture name="droopup0005" x="297" y="269" width="97" height="109" frameX="-3" frameY="-4" frameWidth="63" frameHeight="82" />
+<SubTexture name="droopup0006" x="212" y="155" width="99" height="111" frameX="-3" frameY="-2" frameWidth="63" frameHeight="82" />
+<SubTexture name="droopup0007" x="378" y="0" width="101" height="111" frameX="-2" frameY="-2" frameWidth="63" frameHeight="82" />
+<SubTexture name="droopup0008" x="378" y="111" width="100" height="111" frameX="-3" frameY="-2" frameWidth="63" frameHeight="82" />
+<SubTexture name="left0000" x="479" y="0" width="95" height="109" frameX="-38" frameY="-53" frameWidth="150" frameHeight="150" />
+<SubTexture name="left0001" x="91" y="269" width="95" height="110" frameX="-39" frameY="-53" frameWidth="150" frameHeight="150" />
+<SubTexture name="right0000" x="0" y="486" width="112" height="107" frameX="-41" frameY="-45" frameWidth="150" frameHeight="150" />
+<SubTexture name="right0001" x="112" y="486" width="112" height="107" frameX="-39" frameY="-45" frameWidth="150" frameHeight="150" />
+<SubTexture name="up0000" x="0" y="155" width="106" height="114" frameX="-42" frameY="-41" frameWidth="150" frameHeight="150" />
+<SubTexture name="up0001" x="106" y="155" width="106" height="113" frameX="-42" frameY="-42" frameWidth="150" frameHeight="150" />
+<SubTexture name="down0000" x="264" y="593" width="107" height="101" frameX="-34" frameY="-56" frameWidth="150" frameHeight="150" />
+<SubTexture name="down0001" x="371" y="593" width="107" height="100" frameX="-34" frameY="-55" frameWidth="150" frameHeight="150" />
+<SubTexture name="slash0000" x="186" y="269" width="111" height="110" frameX="-29" frameY="-27" frameWidth="117" frameHeight="115" />
+<SubTexture name="slash0001" x="224" y="486" width="111" height="107" frameX="-30" frameY="-30" frameWidth="117" frameHeight="115" />
+<SubTexture name="slash0002" x="0" y="0" width="157" height="155" frameX="0" frameY="0" frameWidth="117" frameHeight="115" />
+<SubTexture name="slash0003" x="157" y="0" width="109" height="145" frameX="-48" frameY="0" frameWidth="117" frameHeight="115" />
+<SubTexture name="slash0004" x="266" y="0" width="112" height="134" frameX="-44" frameY="-7" frameWidth="117" frameHeight="115" />
+<SubTexture name="pose_named_finger0000" x="335" y="486" width="118" height="107" frameX="-9" frameY="-6" frameWidth="100" frameHeight="88" />
+<SubTexture name="hurt0000" x="567" y="593" width="97" height="82" frameX="-25" frameY="-27" frameWidth="100" frameHeight="88" />
+<SubTexture name="hurt0001" x="543" y="486" width="108" height="105" frameX="-15" frameY="-18" frameWidth="100" frameHeight="88" />
+</TextureAtlas>

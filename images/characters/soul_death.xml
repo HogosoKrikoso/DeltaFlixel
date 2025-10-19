@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="soul_death.png">
+<SubTexture name="soulbreak0000" x="0" y="0" width="56" height="56" frameX="-8" frameY="-8" frameWidth="30" frameHeight="30" />
+<SubTexture name="soulbreak0001" x="56" y="0" width="60" height="56" frameX="-6" frameY="-8" frameWidth="30" frameHeight="30" />
+<SubTexture name="breakidle0000" x="56" y="0" width="60" height="56" frameX="-6" frameY="-8" frameWidth="30" frameHeight="30" />
+</TextureAtlas>
