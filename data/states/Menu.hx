@@ -4,6 +4,7 @@ import funkin.options.TreeMenu;
 
 var stuff:Array<String> = [
 	"Save Files",
+	"World",
 	"Options",
 	"Back To Codename",
 ];
@@ -71,6 +72,9 @@ function update(e:Float) {
 				case "Save Files":
 					canPress = false;
 					FlxG.switchState(new ModState("BattleState"));
+				case "World":
+					canPress = false;
+					FlxG.switchState(new ModState("World"));
 				case "Options":
 					canPress = false;
 					FlxG.switchState(new TreeMenu(() -> {}, true, "hola"));

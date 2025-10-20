@@ -38,8 +38,6 @@ function setGameResolution(realWidth:Int, realHeight:Int, ?keepQuality:Bool = fa
     FlxG.scaleMode.height = FlxG.height = FlxG.initialHeight = height;
     ShaderResizeFix.doResizeFix = true;
     ShaderResizeFix.fixSpritesShadersSizes();
-    window.x = width/2 - window.width/2;
-    window.y = height/2 - window.height/2;
 }
 
 function postStateSwitch(){
