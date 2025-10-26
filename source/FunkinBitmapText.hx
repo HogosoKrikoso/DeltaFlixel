@@ -7,9 +7,9 @@ class FunkinBitmapText extends FlxBitmapText {
 	public var size(get, set):Int;
     public function new(X:Float = 0, Y:Float = 0, Graphic:String, Used:String, ?PointX:Float, ?PointY:Float, ?Text:String, ?Size:Float = 1) {
 		super(X,Y,Text);
-		var pX:Int = (PointX == null) ? (Assets.getBitmapData(Paths.image(Graphic)).width / Used.length) : PointX;
-		var pY:Int = (PointY == null) ? Assets.getBitmapData(Paths.image(Graphic)).height : PointY;
-        var setUp = FlxBitmapFont.fromMonospace(Assets.getBitmapData(Paths.font(Graphic), true, false), Used, FlxPoint.weak(pX, pY));
+		var pX:Int = (PointX == null) ? (Assets.getBitmapData(Paths.font(Graphic + ".png")).width / Used.length) : PointX;
+		var pY:Int = (PointY == null) ? Assets.getBitmapData(Paths.font(Graphic + ".png")).height : PointY;
+        var setUp = FlxBitmapFont.fromMonospace(Assets.getBitmapData(Paths.font(Graphic + ".png"), true, false), Used, FlxPoint.weak(pX, pY));
         font = setUp;
         size = Size;
     }
