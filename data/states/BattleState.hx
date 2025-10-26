@@ -145,7 +145,7 @@ class FightBox
 				bar.scale.x += 0.1;
 				bar.scale.y += 0.1;
 			}else{
-				bar.offset.x += 10;
+				bar.offset.x += FlxG.save.data.thirtyLags ? 10 : 5;
 				barAlpha = 1;
 				bar.scale.set(1,1);
 			}
@@ -246,7 +246,7 @@ function create() {
 	hpText.cameras = [camUI];
 	add(hpText);
 	
-	name = new FunkinBitmapText(0, hudBase.y + 26, "name", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 11, 18, "", 6);
+	name = new FunkinBitmapText(0, hudBase.y + 20, "name", " ABCDEFGHIJKLMNOPQRSTUVWXYZ", 11, 18, "", 2.75);
 	name.cameras = [camUI];
 	add(name);
 	
@@ -308,7 +308,7 @@ function create() {
 	
 	eventName = "startup";
 	events[eventName] = [
-		() -> doTextStuff("* Cheese.", false, false, "default", null, 0.05),
+		() -> doTextStuff("* Cheese.", false, true, "default", null, 0.05),
 	];
 	handleEvent();
 		
@@ -349,7 +349,8 @@ function update() {
 	var char = characters[targetCharacter];
 	if (name != null) {
 		name.text = char.name.toUpperCase();
-		name.y = hudBase.y + 26;
+		name.updateHitbox();
+		name.y = hudBase.y + 18;
 		name.x = hpBar.x - (name.width + 64);
 	}
 	if (icon != null) {
@@ -487,6 +488,16 @@ function update() {
 						tensionPoints -= undos[turn];
 						undos[turn] = 0;
 					}
+				case "magicPlayer":
+					char_acts[turn] = "";
+					state = "select";
+					textOptionCase = "magic";
+					characters[turn].choices[2] = characters[turn].choices[3] = 0;
+					doTextOptions(characters[turn].baseSpells);
+					if (undos[turn] != 0) {
+						tensionPoints -= undos[turn];
+						undos[turn] = 0;
+					}
 				case "act2":
 					state = "select";
 					textOptionCase = "act";
@@ -534,8 +545,9 @@ function update() {
 						undos[turn] = -data.tp;
 						characters[turn].choices[2] = curSel;
 						state = "select";
-						textOptionCase = "magic2";
-						doTextOptions(getEnemyOptions());
+						characters[turn].choices[3] = data.party ? 1 : 0;
+						textOptionCase = data.party ? "magicPlayer" : "magic2";
+						doTextOptions(data.party ? getPartyOptions() : getEnemyOptions());
 					}
 			}
 			return;
@@ -561,6 +573,7 @@ function update() {
 			if (i == fightTurn && box.pressed) {
 				if (box.accuracy >= 0.95)
 					box.bar.color = FlxColor.YELLOW;
+				tensionPoints += 24;
 				playSound("snd_slash", true);
 				enemy.hp -= Math.floor(120*box.accuracy);
 				enemy.playAnim("hurt", true);
@@ -657,9 +670,9 @@ public function nextTurn() {
 		events[eventName] = [];
 		for (i=>character in characters) {
 			var to_do = char_acts[i];
-			var enemy = enemies[character.choices[1]];
 			if (to_do != ""){
-				to_do(character, enemy);
+				var enemy = character.choices[3] == 1 ? characters[character.choices[1]] : enemies[character.choices[1]];
+				to_do(character, character.choices[3] == 1 ? characters[character.choices[1]] : enemies[character.choices[1]]);
 				char_acts[i] = "";
 			}
 		}
@@ -692,6 +705,12 @@ public function prevTurn() {
 public function getEnemyOptions() {
 	var t:Array<Dynamic> = [];
 	for (enemy in enemies) t.push({text: enemy.name, hp: enemy.hp, maxHP: enemy.maxHP, spare: enemy.spare});
+	return t;
+}
+
+public function getPartyOptions() {
+	var t:Array<Dynamic> = [];
+	for (character in characters) t.push({text: character.name, hp: character.hp, maxHP: character.maxHP});
 	return t;
 }
 
