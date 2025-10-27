@@ -29,8 +29,6 @@ var curDisplayWidth = window.display.bounds.width;
 var curDisplayX = window.display.bounds.x;
 var curDisplayY = window.display.bounds.y;
 
-
-var windowTitle = "Friday Night Funkin' Lullaby - Main Menu";
 window.borderless = false;
 
 var tileset;
@@ -62,9 +60,6 @@ function create(){
 	//tileset.updateHitbox(); 
 
 	loadMap();
-
-	player = new Player(500, 500);
-	add(player);
 }
 
 function postCreate(){
@@ -82,26 +77,24 @@ function postCreate(){
 	//	curMusic = FlxG.sound.music;
 	//}
 
-	if(!window.fullscreen){
-		window.maximized = false;
-		alo = FlxTween.num(window.width, curDisplayWidth/1.2, 1.2, { 
-			ease: FlxEase.quadInOut,
-			onUpdate: function(num){
-				window.x = lerp(window.x, curDisplayX + curDisplayWidth/10, 0.04);
-				window.width = num.value;
-			}
-		});
-		
-		alo = FlxTween.num(window.height, curDisplayHeight/1.2, 1.2, { 
-			ease: FlxEase.quadInOut,
-			onUpdate: function(num){
-				window.y = lerp(window.y, curDisplayY + curDisplayHeight/10, 0.04);
-				window.height = num.value;
-			}
-		});
-	}
-
-	window.title = windowTitle;
+	//if(!window.fullscreen){
+	//	window.maximized = false;
+	//	alo = FlxTween.num(window.width, curDisplayWidth/1.2, 1.2, { 
+	//		ease: FlxEase.quadInOut,
+	//		onUpdate: function(num){
+	//			window.x = lerp(window.x, curDisplayX + curDisplayWidth/10, 0.04);
+	//			window.width = num.value;
+	//		}
+	//	});
+	//	
+	//	alo = FlxTween.num(window.height, curDisplayHeight/1.2, 1.2, { 
+	//		ease: FlxEase.quadInOut,
+	//		onUpdate: function(num){
+	//			window.y = lerp(window.y, curDisplayY + curDisplayHeight/10, 0.04);
+	//			window.height = num.value;
+	//		}
+	//	});
+	//}
 
 	//extraObjects = new FlxTypedGroup<FlxSprite>();
 	//for(i => obj in extraLayer.objects){
@@ -237,8 +230,11 @@ function loadMap(){
 	}
 	add(walls);
 
+	player = new Player(500, 500);
+	add(player);
+
 	for(layer in decos.layers){
-		spr = new FlxSprite(layer.offsetX+40, layer.offsetY).loadGraphic(Paths.image('world/'+layer.imagePath.replace('../images/', '').replace('.png', '')));
+		spr = new FlxSprite(layer.offsetX+40, layer.offsetY).loadGraphic(Paths.image(layer.imagePath.replace('../images/', '').replace('.png', '')));
 		add(spr);
 	}
 }

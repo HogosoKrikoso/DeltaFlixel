@@ -1,69 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="19" height="30" tilewidth="40" tileheight="40" infinite="0" nextlayerid="30" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="19" height="30" tilewidth="40" tileheight="40" infinite="0" nextlayerid="55" nextobjectid="1">
  <tileset firstgid="1" source="field.tsx"/>
  <group id="5" name="decos">
-  <imagelayer id="6" name="tree-right" offsetx="100" offsety="70">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="35" name="treeLeft" offsetx="450" offsety="88">
+   <image source="../images/world/tree-left.png" width="210" height="181"/>
   </imagelayer>
-  <imagelayer id="29" name="tree-right" offsetx="22" offsety="150">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="37" name="treeLeft" offsetx="528" offsety="200">
+   <image source="../images/world/tree-left.png" width="210" height="181"/>
   </imagelayer>
-  <imagelayer id="19" name="tree-right" offsetx="8" offsety="256">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="38" name="treeLeft" offsetx="538" offsety="330">
+   <image source="../images/world/tree-left.png" width="210" height="181"/>
   </imagelayer>
-  <imagelayer id="20" name="tree-right" offsetx="10" offsety="376">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="39" name="treeLeft" offsetx="530" offsety="470">
+   <image source="../images/world/tree-left.png" width="210" height="181"/>
   </imagelayer>
-  <imagelayer id="21" name="tree-right" offsetx="-2" offsety="468">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="40" name="treeLeft" offsetx="528" offsety="608">
+   <image source="../images/world/tree-left.png" width="210" height="181"/>
   </imagelayer>
-  <imagelayer id="22" name="tree-right" offsetx="4" offsety="580">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="41" name="treeLeft" offsetx="510" offsety="766">
+   <image source="../images/world/tree-left.png" width="210" height="181"/>
   </imagelayer>
-  <imagelayer id="23" name="tree-right" offsetx="18" offsety="704">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="42" name="treeLeft" offsetx="462" offsety="890">
+   <image source="../images/world/tree-left.png" width="210" height="181"/>
   </imagelayer>
-  <imagelayer id="24" name="tree-right" offsetx="48" offsety="820">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="43" name="treeLeft" offsetx="466" offsety="1012">
+   <image source="../images/world/tree-left.png" width="210" height="181"/>
   </imagelayer>
-  <imagelayer id="25" name="tree-right" offsetx="60" offsety="942">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="46" name="treeRight" offsetx="62" offsety="106">
+   <image source="../images/world/tree-right.png" width="210" height="182"/>
   </imagelayer>
-  <imagelayer id="26" name="tree-right" offsetx="60" offsety="1014">
-   <image source="../images/tree-right.png" width="210" height="182"/>
+  <imagelayer id="48" name="treeRight" offsetx="6" offsety="200">
+   <image source="../images/world/tree-right.png" width="210" height="182"/>
   </imagelayer>
-  <imagelayer id="7" name="tree" offsetx="468" offsety="100">
-   <image source="../images/tree-left.png" width="210" height="181"/>
+  <imagelayer id="49" name="treeRight" offsetx="12" offsety="300">
+   <image source="../images/world/tree-right.png" width="210" height="182"/>
   </imagelayer>
-  <imagelayer id="27" name="tree" offsetx="522" offsety="236">
-   <image source="../images/tree-left.png" width="210" height="181"/>
+  <imagelayer id="50" name="treeRight" offsetx="22" offsety="434">
+   <image source="../images/world/tree-right.png" width="210" height="182"/>
   </imagelayer>
-  <imagelayer id="8" name="tree" offsetx="528" offsety="356">
-   <image source="../images/tree-left.png" width="210" height="181"/>
+  <imagelayer id="51" name="treeRight" offsetx="16" offsety="570">
+   <image source="../images/world/tree-right.png" width="210" height="182"/>
   </imagelayer>
-  <imagelayer id="9" name="tree" offsetx="538" offsety="494">
-   <image source="../images/tree-left.png" width="210" height="181"/>
+  <imagelayer id="52" name="treeRight" offsetx="22" offsety="714">
+   <image source="../images/world/tree-right.png" width="210" height="182"/>
   </imagelayer>
-  <imagelayer id="10" name="tree" offsetx="550" offsety="652">
-   <image source="../images/tree-left.png" width="210" height="181"/>
+  <imagelayer id="53" name="treeRight" offsetx="18" offsety="860">
+   <image source="../images/world/tree-right.png" width="210" height="182"/>
   </imagelayer>
-  <imagelayer id="11" name="tree" offsetx="544" offsety="778">
-   <image source="../images/tree-left.png" width="210" height="181"/>
+  <imagelayer id="54" name="treeRight" offsetx="52" offsety="994">
+   <image source="../images/world/tree-right.png" width="210" height="182"/>
   </imagelayer>
-  <imagelayer id="12" name="tree" offsetx="532" offsety="872">
-   <image source="../images/tree-left.png" width="210" height="181"/>
-  </imagelayer>
-  <imagelayer id="16" name="tree" offsetx="532" offsety="872">
-   <image source="../images/tree-left.png" width="210" height="181"/>
-  </imagelayer>
-  <imagelayer id="17" name="tree" offsetx="442" offsety="920">
-   <image source="../images/tree-left.png" width="210" height="181"/>
-  </imagelayer>
-  <imagelayer id="18" name="tree" offsetx="424" offsety="1026">
-   <image source="../images/tree-left.png" width="210" height="181"/>
-  </imagelayer>
-  <imagelayer id="4" name="dec" offsetx="290" offsety="0">
-   <image source="../images/giantdarkdoor2.png" width="180" height="155"/>
+  <imagelayer id="30" name="dec" offsetx="282.284" offsety="1.58936">
+   <image source="../images/world/giantdarkdoor2.png" width="180" height="155"/>
   </imagelayer>
  </group>
  <layer id="1" name="tile" width="19" height="30">
