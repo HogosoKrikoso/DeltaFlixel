@@ -31,27 +31,6 @@ function create(){
 	add(logo);
 }
 
-function postCreate(){
-	if(!window.fullscreen){
-		window.maximized = false;
-		alo = FlxTween.num(window.width, 4*curDisplayHeight/3.5, 1.2, { 
-			ease: FlxEase.quadInOut,
-			onUpdate: function(num){
-				window.x = lerp(window.x, curDisplayX + curDisplayWidth/5, 0.04);
-				window.width = num.value;
-			}
-		});
-		
-		alo = FlxTween.num(window.height, 3*curDisplayHeight/3.5, 1.2, { 
-			ease: FlxEase.quadInOut,
-			onUpdate: function(num){
-				window.y = lerp(window.y, curDisplayY + curDisplayHeight/16, 0.04);
-				window.height = num.value;
-			}
-		});
-	}
-}
-
 var time_:Float = 0.0;
 function update(e:Float) {
 	time_ += e;

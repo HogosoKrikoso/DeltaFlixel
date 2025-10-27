@@ -15,11 +15,12 @@ import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.ui.FlxBar;
 import FunkinBitmapText;
+import deltaflixel.objects.DeltaCharacter;
+import deltaflixel.objects.DeltaEnemy;
 
 public var onBattle:Bool = true;
 
 importScript("data/scripts/eventSystem");
-importScript("data/scripts/DeltaCharacter");
 	
 public var characters:Array = [];
 public var enemies:Array = [];
@@ -69,8 +70,6 @@ public var grid:FlxBackdrop = new FlxBackdrop(Paths.image('deltaruneBackground')
 grid.velocity.set(-30, -30);
 grid.cameras = [battleGrid];
 add(grid);
-
-public var dialogue:FlxText;
 
 #if mobile
 addTouchPad('LEFT_FULL', 'A_B_C');
@@ -146,7 +145,7 @@ class FightBox
 				bar.scale.x += 0.1;
 				bar.scale.y += 0.1;
 			}else{
-				bar.offset.x += 10;
+				bar.offset.x += FlxG.save.data.thirtyLags ? 10 : 5;
 				barAlpha = 1;
 				bar.scale.set(1,1);
 			}
@@ -217,13 +216,18 @@ function create() {
 		item.ID = menuItems[i];
 	}
 	
-	dialogue = new FlxText(45, hudBase.y + 100);
-	dialogue.setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, 0xFF000088);
-	dialogue.fieldWidth = FlxG.width - (dialogue.x+45);
-	dialogue.borderSize = 5;
-	dialogue.text = "* cheezborger";
-	dialogue.cameras = [camUI];
-	add(dialogue);
+	dialouge = new FlxText(45, hudBase.y + 100);
+	dialouge.setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, 0xFF000088);
+	dialouge.fieldWidth = FlxG.width - (dialouge.x+45);
+	dialouge.borderSize = 5;
+	dialouge.text = "* cheezborger";
+	dialouge.cameras = [camUI];
+	add(dialouge);
+	
+	portrait = new FlxSprite(35, hudBase.y + 75);
+	portrait.cameras = [camUI];
+	portrait.visible = false;
+	add(portrait);
 	
 	hpBar = new FlxBar((FlxG.width / 2), hudBase.y + 46, FlxBar.FILL_LEFT_TO_RIGHT, 175, 18, null, "", 0, 1);
 	hpBar.cameras = [camUI];
@@ -242,7 +246,7 @@ function create() {
 	hpText.cameras = [camUI];
 	add(hpText);
 	
-	name = new FunkinBitmapText(0, hudBase.y + 26, "name", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 11, 18, "", 6);
+	name = new FunkinBitmapText(0, hudBase.y + 20, "name", " ABCDEFGHIJKLMNOPQRSTUVWXYZ", 11, 18, "", 2.75);
 	name.cameras = [camUI];
 	add(name);
 	
@@ -287,30 +291,31 @@ function create() {
 	soul.cameras = [camUI];
 	add(soul);
 	
-	manageEventList("textoChistoso");
-	clearEventsList();
-	addEventToList(() -> textEvent(dialogue, "* Now HaxeFlixel?! You're goin crazy bro!", false, scrollSound, 0.05));
-	handleEvent();
-	
 	/*if (chars != null) 
 	characters = chars;
 	else {*/
-		importScript("deltamod/chars/kris");
-		importScript("deltamod/chars/susie");
-		importScript("deltamod/chars/ralsei");
-		//importScript("deltamod/chars/noelle");
+		importScript("data/chars/kris");
+		importScript("data/chars/susie");
+		importScript("data/chars/ralsei");
+		//importScript("data/chars/noelle");
 	//}
 	
 	/*if (_enemies != null) 
 		enemies = _enemies;
 	else {*/
-		importScript("deltamod/enemies/cheese");
-		importScript("deltamod/enemies/cheese");
+		importScript("data/enemies/cheese");
 	//}
+	
+	eventName = "startup";
+	events[eventName] = [
+		() -> doTextStuff("* Cheese.", false, true, "default", null, 0.05),
+	];
+	handleEvent();
+		
 	var i = 0;
 	for (character in characters) {
-		if (character.sprite != null)
-			add(character.sprite);
+		character.camera = overworldFront;
+		add(character);
 		undos.push(0);
 		char_acts.push("");
 		var box = new FightBox((FlxG.width/2)-240, 25 + 80*i, character);
@@ -320,8 +325,10 @@ function create() {
 		fightBoxes.push(box);
 		i += 1;
 	}
-	for (enemy in enemies) if (enemy.sprite != null)
-		add(enemy.sprite);
+	for (enemy in enemies) if (enemy != null) {
+		enemy.camera = overworldFront;
+		add(enemy);
+	}
 }
 
 public function changeAction(number:Int = 0){
@@ -333,6 +340,7 @@ public function changeSel(number:Int = 0){
 	scrollSound.play(true);
 }
 function update() {
+	dialouge.fieldWidth = FlxG.width - (45 - dialouge.offset.x);
 	if (touchPad.buttonC.justPressed) FlxG.resetState();
 	if (state != "enemyAttack")
 		targetCharacter = turn;
@@ -341,7 +349,8 @@ function update() {
 	var char = characters[targetCharacter];
 	if (name != null) {
 		name.text = char.name.toUpperCase();
-		name.y = hudBase.y + 26;
+		name.updateHitbox();
+		name.y = hudBase.y + 18;
 		name.x = hpBar.x - (name.width + 64);
 	}
 	if (icon != null) {
@@ -376,14 +385,14 @@ function update() {
 				enemies = removeFromArray(i, enemies);
 			}
 		}
-		dialogue.visible = true;
+		dialouge.visible = true;
 		if (controls.BACK) {
 			if (turn > 0) {
 				cancelSound.play(true);
 				prevTurn();
 			}
 		}
-		characters[turn].sprite.playAnim("idle", false);
+		characters[turn].playAnim("idle", false);
 		if (controls.ACCEPT) {
 			confirmSound.play(true);
 			switch (menuItems[curAction]) {
@@ -408,7 +417,7 @@ function update() {
 					characters[turn].choices[0] = 4;
 					tensionPoints += 16;
 					undos[turn] = 16;
-					characters[turn].sprite.playAnim("defend", false);
+					characters[turn].playAnim("defend", false);
 					nextTurn();
 			}
 			return;
@@ -431,7 +440,7 @@ function update() {
 				else item.loadGraphic(Paths.image('ui/act'));
 			}
 		}
-	} else dialogue.visible = state == "events" || state == "win";
+	} else dialouge.visible = state == "events" || state == "win";
 	if (state == "select") {
 		var data = textOptions[curSel].data;
 		if (data.tp == null) data.tp = 0;
@@ -479,6 +488,16 @@ function update() {
 						tensionPoints -= undos[turn];
 						undos[turn] = 0;
 					}
+				case "magicPlayer":
+					char_acts[turn] = "";
+					state = "select";
+					textOptionCase = "magic";
+					characters[turn].choices[2] = characters[turn].choices[3] = 0;
+					doTextOptions(characters[turn].baseSpells);
+					if (undos[turn] != 0) {
+						tensionPoints -= undos[turn];
+						undos[turn] = 0;
+					}
 				case "act2":
 					state = "select";
 					textOptionCase = "act";
@@ -494,11 +513,11 @@ function update() {
 			confirmSound.play(true);
 			switch(textOptionCase) {
 				case "fight":
-					characters[turn].sprite.playAnim("attackprep", false);
+					characters[turn].playAnim("attackprep", false);
 				case "magic2":
-					characters[turn].sprite.playAnim("magicprep", false);
+					characters[turn].playAnim("magicprep", false);
 				case "act2":
-					characters[turn].sprite.playAnim("actprep", false);
+					characters[turn].playAnim("actprep", false);
 			}
 			switch(textOptionCase) {
 				default:
@@ -526,8 +545,9 @@ function update() {
 						undos[turn] = -data.tp;
 						characters[turn].choices[2] = curSel;
 						state = "select";
-						textOptionCase = "magic2";
-						doTextOptions(getEnemyOptions());
+						characters[turn].choices[3] = data.party ? 1 : 0;
+						textOptionCase = data.party ? "magicPlayer" : "magic2";
+						doTextOptions(data.party ? getPartyOptions() : getEnemyOptions());
 					}
 			}
 			return;
@@ -553,15 +573,16 @@ function update() {
 			if (i == fightTurn && box.pressed) {
 				if (box.accuracy >= 0.95)
 					box.bar.color = FlxColor.YELLOW;
+				tensionPoints += 24;
 				playSound("snd_slash", true);
 				enemy.hp -= Math.floor(120*box.accuracy);
-				enemy.sprite.playAnim("hurt", true);
+				enemy.playAnim("hurt", true);
 				new FlxTimer().start(0.32, (tmr) -> {
-					enemy.sprite.playAnim("idle", true);
+					enemy.playAnim("idle", true);
 					handleEvent();
 				});
 				enemy.shake = 10;
-				characters[i].sprite.playAnim("attack", false);
+				characters[i].playAnim("attack", false);
 				fightTurn += 1;
 			}
 		}
@@ -569,7 +590,7 @@ function update() {
 			state = "actions";
 			turn = 0;
 			for (character in characters) {
-				character.sprite.playAnim("idle", true);
+				character.playAnim("idle", true);
 				character.choices = [0,0,0,0,0,0];
 			}
 		}
@@ -580,55 +601,42 @@ function update() {
 		}
 	}
 	for (i=>character in characters) {
-		if (character.sprite != null) {
-			character.sprite.y = CoolUtil.fpsLerp(150 + ((400/characters.length) * i), character.sprite.y, 0.5);
-			character.sprite.x = CoolUtil.fpsLerp(275 - ((25/characters.length) * i), character.sprite.x, 0.5) + FlxG.random.float(-character.shake,character.shake);
-			if (character.shake > 0) character.shake -= 0.1;
-		}
+		character.y = CoolUtil.fpsLerp(150 + ((400/characters.length) * (characters.length < 2 ? 0.25 : i)), character.y, 0.5);
+		character.x = CoolUtil.fpsLerp(275 - ((25/characters.length) * i), character.x, 0.5) + FlxG.random.float(-character.shake,character.shake);
+		if (character.shake > 0) character.shake -= 0.1;
 	}
 	for (i=>enemy in enemies) {
 		if (enemy.hp <= 0) {
-			FlxTween.tween(enemy.sprite, {x: FlxG.width-(enemy.sprite.width+25)}, 0.5, {ease: FlxEase.quadOut});
-			enemy.sprite.playAnim("dead");
+			FlxTween.tween(enemy, {x: FlxG.width-(enemy.width+25)}, 0.5, {ease: FlxEase.quadOut});
+			enemy.playAnim("dead");
 			new FlxTimer().start(0.5, (x) -> {
-				if (enemy.sprite != null) FlxTween.tween(enemy.sprite, {x: FlxG.width*1.1}, 0.32);
+				if (enemy != null) FlxTween.tween(enemy, {x: FlxG.width*1.1}, 0.32);
 			});
 		} else {
-			if (enemy.sprite != null) {
-				enemy.sprite.y = CoolUtil.fpsLerp(150 + ((400/enemies.length) * i), enemy.sprite.y, 0.5);
-				enemy.sprite.x = CoolUtil.fpsLerp((FlxG.width - 320) + ((25/enemies.length) * i), enemy.sprite.x, 0.5) + FlxG.random.float(-enemy.shake,enemy.shake);
-				if (enemy.shake > 0) enemy.shake -= 0.25;
-			}
+			enemy.y = CoolUtil.fpsLerp(150 + ((400/enemies.length) * (enemies.length < 2 ? 0.25 : i)), enemy.y, 0.5);
+			enemy.x = CoolUtil.fpsLerp((FlxG.width - 320) + ((25/enemies.length) * i), enemy.x, 0.5) + FlxG.random.float(-enemy.shake,enemy.shake);
+			if (enemy.shake > 0) enemy.shake -= 0.25;
 		}
 	}
 	var deadChars = 0;
 	for (character in characters) {
 		if (character.hp <= 0) {
-			character.sprite.playAnim("dead", true);
+			character.playAnim("dead", true);
 			deadChars += 1;
 		}else{
-			if (character.sprite.animation.name == "dead") {
-				character.sprite.playAnim("idle", true);
+			if (character.animation.name == "dead") {
+				character.playAnim("idle", true);
 			}
 		}
 	}
 	if (deadChars == characters.length) FlxG.resetState();
 	for (box in fightBoxes) box.update(controls.ACCEPT);
 	if (enemies.length <= 0 && state != "win") {
-		manageEventList("win");
-		addEventToList(() -> textEvent(dialogue, "You won!\n0 XP - 0 D$", false, scrollSound, 0.05));
-		/*addEventToList(() -> {
-			new FlxTimer().start(0.25, (s) -> {
-				dialogue.text += "\n";
-				textEvent(dialogue, "0 XP - 0 D$", true, scrollSound, 0.05);
-			});
-		});*/
+		eventName = "youWon";
+		events[eventName] = [
+			() -> doTextStuff("You won!\n0 XP - 0 D$", false, false, "default", null, 0.05),
+		];
 		handleEvent();
-		addEventToList(() -> {
-			conditionFunction = () -> {
-				return controls.ACCEPT;
-			};
-		});
 		state = "win";
 	}
 }
@@ -658,17 +666,17 @@ public function nextTurn() {
 	turn += 1;
 	if (turn >  characters.length-1)  {
 		state = "events";
-		manageEventList("postPlayerTurn");
-		clearEventsList();
+		eventName = "postPlayerTurn";
+		events[eventName] = [];
 		for (i=>character in characters) {
 			var to_do = char_acts[i];
-			var enemy = enemies[character.choices[1]];
 			if (to_do != ""){
-				to_do(character, enemy);
+				var enemy = character.choices[3] == 1 ? characters[character.choices[1]] : enemies[character.choices[1]];
+				to_do(character, character.choices[3] == 1 ? characters[character.choices[1]] : enemies[character.choices[1]]);
 				char_acts[i] = "";
 			}
 		}
-		addEventToList(() -> {
+		events[eventName].push(() -> {
 			fightTurn = 0;
 			for (i=>box in fightBoxes) {
 				box.resetX();
@@ -697,6 +705,12 @@ public function prevTurn() {
 public function getEnemyOptions() {
 	var t:Array<Dynamic> = [];
 	for (enemy in enemies) t.push({text: enemy.name, hp: enemy.hp, maxHP: enemy.maxHP, spare: enemy.spare});
+	return t;
+}
+
+public function getPartyOptions() {
+	var t:Array<Dynamic> = [];
+	for (character in characters) t.push({text: character.name, hp: character.hp, maxHP: character.maxHP});
 	return t;
 }
 
