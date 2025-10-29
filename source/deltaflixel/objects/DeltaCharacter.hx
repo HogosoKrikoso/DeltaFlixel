@@ -1,5 +1,10 @@
+function playSound(path, ?force:Bool = false) {
+	var sound = FlxG.sound.load(Paths.sound(path));
+	sound.play(force);
+}
 class DeltaCharacter extends FunkinSprite
 {
+	
 	public var name = "";
 	public var icon = "";
 	public var hp = 0;
@@ -111,5 +116,17 @@ class DeltaCharacter extends FunkinSprite
 			default:
 		}
 		isMoving = velocity.x == 0 && velocity.x == 0 ? false : true;
+	}
+	
+	public function heal(v, ?removeSound:Bool = false) {
+		hp += v;
+		if(!removeSound) playSound("heal");
+	}
+	
+	public function hurt(v, ?removeSound:Bool = false, ?customShake:Int = 10) {
+		hp -= v;
+		playAnim("hurt");
+		if(!removeSound) playSound("hurt");
+		shake = customShake;
 	}
 }
