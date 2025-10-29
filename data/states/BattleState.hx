@@ -17,7 +17,8 @@ import flixel.ui.FlxBar;
 import FunkinBitmapText;
 import deltaflixel.objects.DeltaCharacter;
 import deltaflixel.objects.DeltaEnemy;
-
+import deltaflixel.objects.BattleButton;
+import deltaflixel.objects.FightBox;
 public var onBattle:Bool = true;
 
 importScript("data/scripts/eventSystem");
@@ -56,7 +57,7 @@ var fightTurn = 0;
 var curAction:Int = 0;
 var curSel:Int = 0;
 var targetCharacter:Int = 0;
-var menuItems:Array<String> = ["fight", "act", "item", "mercy", "defend"];
+var menuItems:Array<String> = ["fight", "act", "item", "spare", "defend"];
 var groupMenuItems:FlxTypedGroup = [];
 var textOptions:FlxTypedGroup = [];
 var fightBoxes:FlxTypedGroup = [];
@@ -76,81 +77,10 @@ addTouchPad('LEFT_FULL', 'A_B_C');
 addTouchPadCamera(false);
 #end
 
-function reverseMin(v, max){
-	if(v > max)
-		return max + (max - v);
-	else
-		return v;
-}
-
 function playSound(path, force) {
 	var sound = FlxG.sound.load(Paths.sound(path));
 	sound.volume = 1;
 	sound.play(force);
-}
-
-class FightBox
-{
-	public var x = 0;
-	public var y = 0;
-	public var alpha:Float = 0;
-	public var visible = true;
-	public var accuracy = 0;
-	public var canUpdate = false;
-	public var canPress = false;
-	public var pressed = false;
-	public var icon:FlxSprite;
-	public var box:FlxSprite;
-	public var bar:FlxSprite;
-	public var barAlpha:Float = 1;
-	public function new(xPos, yPos, character)
-	{
-		x = xPos;
-		y = yPos;
-		icon = new FlxSprite().loadGraphic(Paths.image('ui/icons/' + character.icon));
-		icon.cameras = [camUI];
-		icon.scale.set(2.5,2.5);
-		icon.updateHitbox();
-		box = new FlxSprite().loadGraphic(Paths.image('ui/boxFight'));
-		box.cameras = [camUI];
-		box.color = character.color;
-		bar = new FlxSprite().makeGraphic(18, 76,FlxColor.WHITE);
-		bar.cameras = [camUI];
-	}
-	
-	public function resetX()
-		bar.offset.x = 0;
-		
-	public function update(keyPress)
-	{
-		icon.alpha = box.alpha = alpha;
-		bar.alpha = alpha*barAlpha;
-		icon.visible = box.visible = bar.visible = visible;
-		icon.setPosition(x,y);
-		box.setPosition(x+100,y);
-		bar.setPosition(box.x+box.width,y+4);
-		if (canUpdate) {
-			accuracy = reverseMin(bar.offset.x/box.width, 1);
-			if (keyPress && bar.offset.x >= 50 && canPress && !pressed)
-				pressed = true;
-			if (bar.offset.x >= (box.width+75)) {
-				accuracy = 0;
-				pressed = true;
-				canUpdate = false;
-				canPress = false;
-			}
-			if (pressed) {
-				if (barAlpha > 0)
-					barAlpha -= 0.1;
-				bar.scale.x += 0.1;
-				bar.scale.y += 0.1;
-			}else{
-				bar.offset.x += FlxG.save.data.thirtyLags ? 10 : 5;
-				barAlpha = 1;
-				bar.scale.set(1,1);
-			}
-		}
-	}
 }
 
 public function doTextOptions(stuff) {
@@ -204,22 +134,14 @@ function create() {
 	add(hudBase);
 	
 	for (i in 0...menuItems.length) {
-		item = new FlxSprite().loadGraphic(Paths.image('ui/' + menuItems[i]));
+		item = new BattleButton(0,0,menuItems[i],2);
 		item.cameras = [camUI];
-		item.scale.set(2, 2);
-		item.updateHitbox();
-		item.x = ((FlxG.width/2) - (40*menuItems.length)) + (80*i);
-		item.y = hudBase.y - 75;
-		item.color = 0xFFFF7F00;
 		groupMenuItems.push(item);
 		add(item);
-		item.ID = menuItems[i];
 	}
 	
-	dialouge = new FlxText(45, hudBase.y + 100);
-	dialouge.setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, 0xFF000088);
-	dialouge.fieldWidth = FlxG.width - (dialouge.x+45);
-	dialouge.borderSize = 5;
+	dialouge = new FlxText();
+	dialouge.setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left");	dialouge.fieldWidth = FlxG.width - (dialouge.x+45);
 	dialouge.text = "* cheezborger";
 	dialouge.cameras = [camUI];
 	add(dialouge);
@@ -353,6 +275,9 @@ function update() {
 		name.y = hudBase.y + 18;
 		name.x = hpBar.x - (name.width + 64);
 	}
+	if (dialouge != null) {
+		dialouge.setPosition(45, hudBase.y + 100);
+	}
 	if (icon != null) {
 		icon.loadGraphic(Paths.image('ui/icons/' + char.icon));
 		icon.scale.set(2,2);
@@ -379,6 +304,10 @@ function update() {
 		hpText.text = char.hp + "/" + char.maxHP;
 		hpText.color = char.hp <= 0 ? FlxColor.RED : (char.hp <= char.maxHP/4 ? FlxColor.YELLOW : FlxColor.WHITE);
 	}
+	for (i=>item in groupMenuItems) {
+		item.x = ((FlxG.width/2) - (40*groupMenuItems.length)) + (80*i);
+		item.y = hudBase.y - 75;
+	}
 	if (state == "actions") {
 		for (i=>enemy in enemies) {
 			if (enemy.hp <= 0) {
@@ -394,25 +323,27 @@ function update() {
 		}
 		characters[turn].playAnim("idle", false);
 		if (controls.ACCEPT) {
+			if (characters[turn].hp < 0) {
+				nextTurn();
+				return;
+			}
 			confirmSound.play(true);
-			switch (menuItems[curAction]) {
+			switch (groupMenuItems[curAction].buttonName) {
 				case "fight":
 					state = "select";
 					textOptionCase = "fight";
 					characters[turn].choices[0] = 0;
 					doTextOptions(getEnemyOptions());
 				case "act":
-					if (characters[turn].canMagic == true) {
-						state = "select";
-						textOptionCase = "magic";
-						characters[turn].choices[0] = 1;
-						doTextOptions(characters[turn].baseSpells);
-					}else{
-						state = "select";
-						textOptionCase = "act";
-						characters[turn].choices[0] = 1;
-						doTextOptions(getEnemyOptions());
-					}
+					state = "select";
+					textOptionCase = "magic";
+					characters[turn].choices[0] = 1;
+					doTextOptions(characters[turn].baseSpells);
+				case "magic":
+					state = "select";
+					textOptionCase = "act";
+					characters[turn].choices[0] = 1;
+					doTextOptions(getEnemyOptions());
 				case "defend":
 					characters[turn].choices[0] = 4;
 					tensionPoints += 16;
@@ -432,13 +363,9 @@ function update() {
 		}
 		
 		for (i=>item in groupMenuItems) {
-			if(i == curAction) item.color = FlxColor.YELLOW;
-			else item.color = 0xFFFF7F00;
-			var id = menuItems[i];
-			if (id == "act") {
-				if (characters[turn].canMagic) item.loadGraphic(Paths.image('ui/magic'));
-				else item.loadGraphic(Paths.image('ui/act'));
-			}
+			var id = item.buttonName;
+			if (id == "act" || id == "magic") item.buttonName = characters[turn].canMagic ? "magic" : "act";
+			item.updateGraphic(i == curAction);
 		}
 	} else dialouge.visible = state == "events" || state == "win";
 	if (state == "select") {
@@ -513,11 +440,13 @@ function update() {
 			confirmSound.play(true);
 			switch(textOptionCase) {
 				case "fight":
-					characters[turn].playAnim("attackprep", false);
+					characters[turn].playAnim("attackprep", true);
 				case "magic2":
-					characters[turn].playAnim("magicprep", false);
+					characters[turn].playAnim("spellprep", true);
+				case "magicPlayer":
+					characters[turn].playAnim("spellprep", true);
 				case "act2":
-					characters[turn].playAnim("actprep", false);
+					characters[turn].playAnim("actprep", true);
 			}
 			switch(textOptionCase) {
 				default:
@@ -573,26 +502,30 @@ function update() {
 			if (i == fightTurn && box.pressed) {
 				if (box.accuracy >= 0.95)
 					box.bar.color = FlxColor.YELLOW;
-				tensionPoints += 24;
-				playSound("snd_slash", true);
-				enemy.hp -= Math.floor(120*box.accuracy);
-				enemy.playAnim("hurt", true);
-				new FlxTimer().start(0.32, (tmr) -> {
-					enemy.playAnim("idle", true);
-					handleEvent();
+				if (box.accuracy >= 0)
+					tensionPoints += 24;
+				playSound("slash", true);
+				new FlxTimer().start(0.32, () -> {
+					if (box.accuracy > 0) {
+						enemy.hurt(Math.floor(120*box.accuracy));
+						new FlxTimer().start(0.32, (tmr) -> {
+							enemy.playAnim("idle", true);
+						});
+					}
 				});
-				enemy.shake = 10;
 				characters[i].playAnim("attack", false);
 				fightTurn += 1;
 			}
 		}
 		if (fightTurn >= characters.length) {
-			state = "actions";
-			turn = 0;
-			for (character in characters) {
-				character.playAnim("idle", true);
-				character.choices = [0,0,0,0,0,0];
-			}
+			new FlxTimer().start(1, () -> {
+				state = "actions";
+				turn = 0;
+				for (character in characters) {
+					character.playAnim("idle", true);
+					character.choices = [0,0,0,0,0,0];
+				}
+			});
 		}
 	}else{
 		for (box in fightBoxes) {
@@ -672,7 +605,7 @@ public function nextTurn() {
 			var to_do = char_acts[i];
 			if (to_do != ""){
 				var enemy = character.choices[3] == 1 ? characters[character.choices[1]] : enemies[character.choices[1]];
-				to_do(character, character.choices[3] == 1 ? characters[character.choices[1]] : enemies[character.choices[1]]);
+				to_do(character, enemy);
 				char_acts[i] = "";
 			}
 		}
