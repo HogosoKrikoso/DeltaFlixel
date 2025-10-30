@@ -104,7 +104,7 @@ public function doTextOptions(stuff) {
 function create() {
 	
 	tpBar = new FlxBar(0, 0, FlxBarFillDirection.RIGHT_TO_LEFT, 859, 100, null, '', 0, 100);
-	tpBar.createImageBar(Paths.image('ui/tpBar_empty'), Paths.image('ui/tpBar_filled'));
+	tpBar.createImageBar(Paths.image('ui/battle/tpBar_empty'), Paths.image('ui/battle/tpBar_filled'));
 	tpBar.setPosition(-300,310);
 	tpBar.angle = 90;
 	tpBar.scale.set(0.5, 0.5);
@@ -113,7 +113,7 @@ function create() {
 	tpBar.cameras = [camUI];
 	add(tpBar);
 	
-	tpLabel = new FlxSprite().loadGraphic(Paths.image('ui/tp'));
+	tpLabel = new FlxSprite().loadGraphic(Paths.image('ui/battle/tp'));
 	tpLabel.scale.set(2,2);
 	tpLabel.updateHitbox();
 	tpLabel.setPosition(35, 200);
@@ -128,7 +128,7 @@ function create() {
 	tpText.cameras = [camUI];
 	add(tpText);
 	
-	hudBase = new FlxSprite().loadGraphic(Paths.image('ui/base'));
+	hudBase = new FlxSprite().loadGraphic(Paths.image('ui/battle/base'));
 	hudBase.scale.set(FlxG.width,1.25);
 	hudBase.updateHitbox();
 	hudBase.y = FlxG.height - hudBase.height;
@@ -157,7 +157,7 @@ function create() {
 	hpBar.cameras = [camUI];
 	add(hpBar);
 	
-	hpLabel = new FlxSprite().loadGraphic(Paths.image('ui/hp'));
+	hpLabel = new FlxSprite().loadGraphic(Paths.image('ui/battle/hp'));
 	hpLabel.scale.set(2.25,2.25);
 	hpLabel.updateHitbox();
 	hpLabel.setPosition(hpBar.x - (hpLabel.width + 14), hpBar.y);
@@ -281,7 +281,7 @@ function update() {
 		dialouge.setPosition(45, hudBase.y + 100);
 	}
 	if (icon != null) {
-		icon.loadGraphic(Paths.image('ui/icons/' + char.icon));
+		icon.loadGraphic(Paths.image('ui/battle/icons/' + char.icon));
 		icon.scale.set(2,2);
 		icon.updateHitbox();
 		icon.setPosition(name.x - (icon.width + 12), hudBase.y + 14);
