@@ -30,6 +30,8 @@ var turn:Int = 0;
 var state = "actions";
 var textOptionCase = "";
 
+var timerThatRunsWhenTheFightThingEnds:FlxTimer;
+
 var confirmSound:FlxSound = FlxG.sound.load(Paths.sound("menu/confirm"));
 public var scrollSound:FlxSound = FlxG.sound.load(Paths.sound("menu/scroll"));
 var cancelSound:FlxSound = FlxG.sound.load(Paths.sound("menu/cancel"));
@@ -219,7 +221,7 @@ function create() {
 		importScript("data/chars/kris");
 		importScript("data/chars/susie");
 		importScript("data/chars/ralsei");
-		//importScript("data/chars/noelle");
+		importScript("data/chars/marcusrpgmini");
 	//}
 	
 	/*if (_enemies != null) 
@@ -334,12 +336,12 @@ function update() {
 					textOptionCase = "fight";
 					characters[turn].choices[0] = 0;
 					doTextOptions(getEnemyOptions());
-				case "act":
+				case "magic":
 					state = "select";
 					textOptionCase = "magic";
 					characters[turn].choices[0] = 1;
 					doTextOptions(characters[turn].baseSpells);
-				case "magic":
+				case "act":
 					state = "select";
 					textOptionCase = "act";
 					characters[turn].choices[0] = 1;
@@ -518,14 +520,17 @@ function update() {
 			}
 		}
 		if (fightTurn >= characters.length) {
-			new FlxTimer().start(1, () -> {
-				state = "actions";
-				turn = 0;
-				for (character in characters) {
-					character.playAnim("idle", true);
-					character.choices = [0,0,0,0,0,0];
-				}
-			});
+			if (timerThatRunsWhenTheFightThingEnds == null) {
+				timerThatRunsWhenTheFightThingEnds = new FlxTimer().start(1, (tmr) -> {
+					state = "actions";
+					turn = 0;
+					for (character in characters) {
+						character.playAnim("idle", true);
+						character.choices = [0,0,0,0,0,0];
+					}
+					timerThatRunsWhenTheFightThingEnds = null;
+				});
+			}
 		}
 	}else{
 		for (box in fightBoxes) {

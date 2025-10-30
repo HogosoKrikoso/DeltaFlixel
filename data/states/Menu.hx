@@ -3,7 +3,7 @@ import flixel.text.FlxTextBorderStyle;
 import funkin.options.TreeMenu;
 
 var stuff:Array<String> = [
-	"Save Files",
+	"Battle",
 	"World",
 	"Options",
 	"Back To Codename",
@@ -58,7 +58,7 @@ function update(e:Float) {
 	soul.x = lerp(soul.x, stuffGroup[curSelected].x-64, 0.1);
 	soul.y = lerp(soul.y, stuffGroup[curSelected].y, 0.1);
 	for (i in 0...stuffGroup.length)
-		stuffGroup[i].color = (i == curSelected) ? FlxColor.YELLOW : FlxColor.WHITE;
+		stuffGroup[i].color = (i == curSelected) ? FlxColor.WHITE : FlxColor.GRAY;
 	if (canPress) {
 		if (controls.UP_P)
 			changeSelection(-1);
@@ -69,7 +69,7 @@ function update(e:Float) {
 		if (controls.ACCEPT) {
 			confirmSound.play(true);
 			switch (stuff[curSelected]) {
-				case "Save Files":
+				case "Battle":
 					canPress = false;
 					FlxG.switchState(new ModState("BattleState"));
 				case "World":

@@ -1,8 +1,8 @@
 import funkin.menus.ModSwitchMenu;
 
 var stuff:Array<String> = [
-	"Yup.",
-	"Nope.",
+	"Yes",
+	"No",
 ];
 var curSelected:Int = 0; //bart simpson
 var canPress:Bool = true;
@@ -35,17 +35,6 @@ var tiles:Array<Dynamic> = [
 	},
 ];
 function create(){
-	for (tile in tiles) {
-		var yPos = ((tileset.graphic.width/tileset.frameWidth) * tile.tilesetY);
-		var tileSprite = new FlxSprite().loadGraphicFromSprite(tileset);
-		tileSprite.scale.set(tileset.scale.x,tileset.scale.y);
-		tileSprite.updateHitbox();
-		tileSprite.setPosition(tile.x*tileset.frameWidth,tile.y*tileset.frameHeight);
-		tileSprite.animation.add("idle",[yPos+tile.tilesetX],1,true);
-		add(tileSprite);
-		tileSprite.animation.play("idle");
-	}
-	
 	FlxG.camera.y = -100;
 	FlxG.camera.flashSprite.scaleX = 0.1;
 	FlxG.camera.alpha = 0;
@@ -89,14 +78,14 @@ function update(e:Float) {
 		if (controls.ACCEPT) {
 			confirmSound.play(true);
 			switch (stuff[curSelected]) {
-				case "Yup.":
+				case "Yes":
 					canPress = false;
 					FlxTween.tween(FlxG.camera, {y: -100, alpha: 0}, 0.5, { ease: FlxEase.quadOut });
 					FlxTween.tween(FlxG.camera.flashSprite, {scaleX: 0.001}, 0.5, { ease: FlxEase.quadOut });
 					new FlxTimer().start(0.5, function(tmr){
 						FlxG.switchState(new ModState("Intro"));
 					});
-				case "Nope.":
+				case "No":
 					persistentUpdate = !(persistentDraw = true);
 					openSubState(new ModSwitchMenu());
 			}

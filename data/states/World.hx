@@ -38,9 +38,7 @@ function create(){
 	overworldDialougeBox.cameras = [camUI];
 	add(overworldDialougeBox);
 	
-	dialouge = new FlxText(overworldDialougeBox.x + 50, overworldDialougeBox.y + 50).setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, 0xFF000088);
-	dialouge.text = "puto";
-	dialouge.borderSize = 5;
+	dialouge = new FlxText(overworldDialougeBox.x + 50, overworldDialougeBox.y + 50).setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left");
 	dialouge.cameras = [camUI];
 	add(dialouge);
 	
@@ -117,11 +115,8 @@ function loadMap(){
 	}
 	add(walls);
 
-	player = new Player(500, 500);
-	add(player);
-
 	for(layer in decos.layers){
-		spr = new FlxSprite(layer.offsetX+40, layer.offsetY).loadGraphic(Paths.image(layer.imagePath.replace('../images/', '').replace('.png', '')));
+		spr = new FlxSprite(layer.offsetX+40, layer.offsetY).loadGraphic(Paths.image('world/'+layer.imagePath.replace('../images/', '').replace('.png', '')));
 		add(spr);
 	}
 }*/
