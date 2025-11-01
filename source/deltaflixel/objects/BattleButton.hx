@@ -9,8 +9,7 @@ class BattleButton extends FunkinSprite
 		updateGraphic(false);
 	}
 	public function updateGraphic(highlight){
-		loadGraphic(Paths.image("ui/battle/buttons/" + (forceGraphicName != "" ? forceGraphicName : buttonName) + (highlight ? "_h" : "")));
+		loadGraphic(Paths.image("ui/" + (forceGraphicName != "" ? forceGraphicName : buttonName) + (highlight ? "_h" : "")));
 		updateHitbox();
 	}
-
 }
