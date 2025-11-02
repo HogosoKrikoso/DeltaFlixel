@@ -1,9 +1,3 @@
-function reverseMin(v, max){
-	if(v > max)
-		return max + (max - v);
-	else
-		return v;
-}
 class FightBox
 {
 	public var x = 0;
@@ -22,11 +16,11 @@ class FightBox
 	{
 		x = xPos;
 		y = yPos;
-		icon = new FlxSprite().loadGraphic(Paths.image('ui/icons/' + character.icon));
+		icon = new FlxSprite().loadGraphic(Paths.image('ui/battle/icons/' + character.icon));
 		icon.cameras = [camUI];
 		icon.scale.set(2.5,2.5);
 		icon.updateHitbox();
-		box = new FlxSprite().loadGraphic(Paths.image('ui/boxFight'));
+		box = new FlxSprite().loadGraphic(Paths.image('ui/battle/boxFight'));
 		box.cameras = [camUI];
 		box.color = character.color;
 		bar = new FlxSprite().makeGraphic(18, 76,FlxColor.WHITE);
@@ -60,7 +54,7 @@ class FightBox
 				bar.scale.x += 0.1;
 				bar.scale.y += 0.1;
 			}else{
-				bar.offset.x += FlxG.save.data.thirtyLags ? 10 : 5;
+				bar.offset.x += 300 / getFPS();
 				barAlpha = 1;
 				bar.scale.set(1,1);
 			}

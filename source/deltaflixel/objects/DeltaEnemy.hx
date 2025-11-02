@@ -1,7 +1,3 @@
-function playSound(path, ?force:Bool = false) {
-	var sound = FlxG.sound.load(Paths.sound(path));
-	sound.play(force);
-}
 class DeltaEnemy extends FunkinSprite
 {
 
@@ -12,6 +8,7 @@ class DeltaEnemy extends FunkinSprite
 	public var acts:Map<String, Array> = [];
 	public var spare = 0;
 	public var shake = 0;
+	public var tweened = false;
 	
 	public function new(_name, _spritesheet, _animations, _scale, _hp, _acts) { 
 		super();

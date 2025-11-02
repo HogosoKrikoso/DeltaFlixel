@@ -1,7 +1,3 @@
-function playSound(path, ?force:Bool = false) {
-	var sound = FlxG.sound.load(Paths.sound(path));
-	sound.play(force);
-}
 class DeltaCharacter extends FunkinSprite
 {
 	
@@ -46,15 +42,15 @@ class DeltaCharacter extends FunkinSprite
 		playAnim('idle');
 		updateHitbox();
 	}
-	public function overworldUpdate(follow, controls){
+	public function overworldUpdate(follow, keys){
 		speed = baseSpeed;
 		
-		var up:Bool = controls.UP;
-		var down:Bool = controls.DOWN;
-		var left:Bool = controls.LEFT;
-		var right:Bool = controls.RIGHT;
+		var up:Bool = keys.UP;
+		var down:Bool = keys.DOWN;
+		var left:Bool = keys.LEFT;
+		var right:Bool = keys.RIGHT;
 
-		if ((FlxG.keys.pressed.SHIFT || controls.BACK_HOLD) && action == "walk"){ 
+		if (keys.BACK_HOLD && action == "walk"){ 
 			speed += 100;
 			animation.timeScale = 1.5;
 		}
