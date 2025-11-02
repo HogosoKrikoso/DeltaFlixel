@@ -89,7 +89,7 @@ var character = new DeltaCharacter("Susie", "susie", "characters/susie_noeyes", 
 			});
 			events[eventName].push(() -> {
 				conditionFunction = () -> {
-					if (controls.ACCEPT) {
+					if (keys.ACCEPT) {
 						endDialouge(false);
 						return true;
 					}

@@ -10,7 +10,7 @@ var character = new DeltaCharacter("Marcus", "marcusrpgmini", "characters/marcus
 			events[eventName].push(() -> {
 				enemy.hurt(9999, false, 40);
 				conditionFunction = () -> {
-					if (controls.ACCEPT) {
+					if (keys.ACCEPT) {
 						endDialouge(false);
 						return true;
 					}

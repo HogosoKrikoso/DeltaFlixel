@@ -163,7 +163,7 @@ var character = new DeltaCharacter("Ralsei", "ralsei", "characters/ralsei", [
 			});
 			events[eventName].push(() -> {
 				conditionFunction = () -> {
-					if(controls.ACCEPT) {
+					if(keys.ACCEPT) {
 						endDialouge(false);
 						return true;
 					}
