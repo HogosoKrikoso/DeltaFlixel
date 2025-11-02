@@ -1,3 +1,4 @@
+import funkin.backend.MusicBeatState;
 import funkin.menus.ModSwitchMenu;
 
 var stuff:Array<String> = [
@@ -10,9 +11,6 @@ var canPress:Bool = true;
 var stuffGroup:FlxTypedGroup<FlxSprite> = [];
 var soul:FlxSprite;
 
-var confirmSound:FlxSound = FlxG.sound.load(Paths.sound("menu/confirm"));
-var scrollSound:FlxSound = FlxG.sound.load(Paths.sound("menu/scroll"));
-var cancelSound:FlxSound = FlxG.sound.load(Paths.sound("menu/cancel"));
 var goner:FlxSound = FlxG.sound.load(Paths.sound("goner_drone"));
 goner.looped = true;
 goner.play();
@@ -60,7 +58,7 @@ function create(){
 
 function changeSelection(number:Int = 0){
 	curSelected = FlxMath.wrap(curSelected + number, 0, stuff.length-1);
-	scrollSound.play(true);
+	playSound("menu/scroll", true);
 }
 
 function update(e:Float) {
@@ -69,20 +67,21 @@ function update(e:Float) {
 	for (i in 0...stuffGroup.length)
 		stuffGroup[i].color = (i == curSelected) ? FlxColor.YELLOW : FlxColor.WHITE;
 	if (canPress) {
-		if (controls.UP_P)
+		if (keys.UP_P)
 			changeSelection(-1);
 		
-		if (controls.DOWN_P)
+		if (keys.DOWN_P)
 			changeSelection(1);
 			
-		if (controls.ACCEPT) {
-			confirmSound.play(true);
+		if (keys.ACCEPT) {
+			playSound("menu/confirm", true);
 			switch (stuff[curSelected]) {
 				case "Yes":
 					canPress = false;
 					FlxTween.tween(FlxG.camera, {y: -100, alpha: 0}, 0.5, { ease: FlxEase.quadOut });
 					FlxTween.tween(FlxG.camera.flashSprite, {scaleX: 0.001}, 0.5, { ease: FlxEase.quadOut });
 					new FlxTimer().start(0.5, function(tmr){
+						MusicBeatState.skipTransIn = MusicBeatState.skipTransOut = true;
 						FlxG.switchState(new ModState("Intro"));
 					});
 				case "No":
@@ -93,7 +92,7 @@ function update(e:Float) {
 	}
 }
 
-#if mobile
+/*#if mobile
 	addTouchPad("UP_DOWN", "A");
 	addTouchPadCamera();
-#end
+#end*/

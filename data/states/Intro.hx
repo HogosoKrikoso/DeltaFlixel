@@ -9,9 +9,6 @@ var curDisplayY = window.display.bounds.y;
 
 var canPress:Bool = true;
 
-var goner:FlxSound = FlxG.sound.load(Paths.sound("intronoise"));
-goner.play();
-
 function create(){
 	FlxG.camera.alpha = 0;
 	FlxG.camera.y = -1000;
@@ -29,6 +26,7 @@ function create(){
 	logo.updateHitbox();
 	logo.screenCenter();
 	add(logo);
+	playSound("intronoise");
 }
 
 var time_:Float = 0.0;
@@ -36,7 +34,7 @@ function update(e:Float) {
 	time_ += e;
     waveShader.uTime = time_;
 	if (canPress) {
-		if (controls.ACCEPT) {
+		if (keys.ACCEPT) {
 			canPress = false;
 			FlxTween.tween(FlxG.camera, {alpha: 0}, 0.5, { ease: FlxEase.quadOut });
 			new FlxTimer().start(0.5, function(tmr){
@@ -46,8 +44,3 @@ function update(e:Float) {
 		}
 	}
 }
-
-#if mobile
-	addTouchPad("NONE", "A");
-	addTouchPadCamera(false);
-#end

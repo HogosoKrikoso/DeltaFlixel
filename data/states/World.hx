@@ -51,8 +51,8 @@ function create(){
 
 function update(){
 	dialouge.fieldWidth = overworldDialougeBox.width - (100 - dialouge.offset.x);
-	if (touchPad.buttonC.justPressed) FlxG.resetState();
-	characters[0].overworldUpdate(null, controls);
+	if (keys.MENU) FlxG.resetState();
+	characters[0].overworldUpdate(null, keys);
 	FlxG.camera.follow(characters[0]);
 	//FlxG.collide(player, walls);
 }

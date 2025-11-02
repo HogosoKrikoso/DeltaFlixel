@@ -14,13 +14,6 @@ var canPress:Bool = true;
 var stuffGroup:FlxTypedGroup<FlxSprite> = [];
 var soul:FlxSprite;
 
-var confirmSound:FlxSound = FlxG.sound.load(Paths.sound("menu/confirm"));
-var scrollSound:FlxSound = FlxG.sound.load(Paths.sound("menu/scroll"));
-var cancelSound:FlxSound = FlxG.sound.load(Paths.sound("menu/cancel"));
-var music:FlxSound = FlxG.sound.load(Paths.music("quiet_church"));
-music.looped = true;
-music.play();
-
 function create(){
 	FlxG.camera.scroll.y = -100;
 	FlxG.camera.flash(FlxColor.BLACK, 1);
@@ -47,11 +40,12 @@ function create(){
 	soul.scale.set(3, 3);
 	soul.updateHitbox();
 	add(soul);
+	playMusic("quiet_church", 1, true);
 }
 
 function changeSelection(number:Int = 0){
 	curSelected = FlxMath.wrap(curSelected + number, 0, stuff.length-1);
-	scrollSound.play(true);
+	playSound("menu/scroll", true);
 }
 
 function update(e:Float) {
@@ -60,20 +54,22 @@ function update(e:Float) {
 	for (i in 0...stuffGroup.length)
 		stuffGroup[i].color = (i == curSelected) ? FlxColor.WHITE : FlxColor.GRAY;
 	if (canPress) {
-		if (controls.UP_P)
+		if (keys.UP_P)
 			changeSelection(-1);
 		
-		if (controls.DOWN_P)
+		if (keys.DOWN_P)
 			changeSelection(1);
 			
-		if (controls.ACCEPT) {
-			confirmSound.play(true);
+		if (keys.ACCEPT) {
+			playSound("menu/confirm", true);
 			switch (stuff[curSelected]) {
 				case "Battle":
 					canPress = false;
+					FlxG.sound.music.stop();
 					FlxG.switchState(new ModState("BattleState"));
 				case "World":
 					canPress = false;
+					FlxG.sound.music.stop();
 					FlxG.switchState(new ModState("World"));
 				case "Options":
 					canPress = false;
@@ -85,8 +81,3 @@ function update(e:Float) {
 		}
 	}
 }
-
-#if mobile
-	addTouchPad("UP_DOWN", "A");
-	addTouchPadCamera();
-#end
