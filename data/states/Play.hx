@@ -38,13 +38,13 @@ function create(){
 	FlxG.camera.alpha = 0;
 	FlxTween.tween(FlxG.camera.flashSprite, {scaleX: 1}, 0.5, { ease: FlxEase.quadOut });
 	FlxTween.tween(FlxG.camera, {y: 0, alpha: 1}, 0.5, { ease: FlxEase.quadOut });
-	var warn = new FlxText(0, 200).setFormat(Paths.font("determination.ttf"), 48, FlxColor.WHITE, "center");
+	var warn = new FlxText(0, 200).setFormat(Paths.font("main.ttf"), 48, FlxColor.WHITE, "center");
 	warn.text = "This engine is very work in progress.\nAre you sure you want to PROCEED?";
 	warn.screenCenter(FlxAxes.X);
 	add(warn);
 	for (i in 0...stuff.length)
 	{
-		var text = new FlxText(125, (64 * i) + (FlxG.height / 2)).setFormat(Paths.font("determination.ttf"), 48, FlxColor.WHITE, "left");
+		var text = new FlxText(125, (64 * i) + (FlxG.height / 2)).setFormat(Paths.font("main.ttf"), 48, FlxColor.WHITE, "left");
 		text.text = stuff[i];
 		text.screenCenter(FlxAxes.X);
 		stuffGroup.push(text);
@@ -91,8 +91,3 @@ function update(e:Float) {
 		}
 	}
 }
-
-/*#if mobile
-	addTouchPad("UP_DOWN", "A");
-	addTouchPadCamera();
-#end*/

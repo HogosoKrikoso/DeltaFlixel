@@ -38,7 +38,7 @@ function create(){
 	overworldDialougeBox.cameras = [camUI];
 	add(overworldDialougeBox);
 	
-	dialouge = new FlxText(overworldDialougeBox.x + 50, overworldDialougeBox.y + 50).setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left");
+	dialouge = new FlxText(overworldDialougeBox.x + 50, overworldDialougeBox.y + 50).setFormat(Paths.font("main.ttf"), 56, FlxColor.WHITE, "left");
 	dialouge.cameras = [camUI];
 	add(dialouge);
 	
@@ -120,8 +120,3 @@ function loadMap(){
 		add(spr);
 	}
 }*/
-
-#if mobile
-addTouchPad('LEFT_FULL', 'A_B_C');
-addTouchPadCamera(false);
-#end

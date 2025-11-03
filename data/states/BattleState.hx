@@ -64,7 +64,7 @@ public function doTextOptions(stuff) {
 	textOptions = [];
 	if (stuff != null) {
 		for (daOption in stuff) {
-			text = new FlxText(0, -55, 0, daOption.text).setFormat(Paths.font("determination.ttf"), 55, FlxColor.WHITE, "center");
+			text = new FlxText(0, -55, 0, daOption.text).setFormat(Paths.font("main.ttf"), 55, FlxColor.WHITE, "center");
 			text.cameras = [camUI];
 			text.x = -text.width;
 			textOptions.push({obj: text, data: daOption});
@@ -104,7 +104,7 @@ function create() {
 	add(tpLabel);
 	
 	tpText = new FlxText(32, 300);
-	tpText.setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+	tpText.setFormat(Paths.font("main.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
 	tpText.borderSize = 3;
 	tpText.borderQuality = 1;
 	tpText.fieldWidth = tpBar.x;
@@ -126,7 +126,7 @@ function create() {
 	}
 	
 	dialouge = new FlxText();
-	dialouge.setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left");	dialouge.fieldWidth = FlxG.width - (dialouge.x+45);
+	dialouge.setFormat(Paths.font("main.ttf"), 56, FlxColor.WHITE, "left");	dialouge.fieldWidth = FlxG.width - (dialouge.x+45);
 	dialouge.text = "* cheezborger";
 	dialouge.cameras = [camUI];
 	add(dialouge);
@@ -167,7 +167,7 @@ function create() {
 	add(textOptHP);
 	
 	textOptHPText = new FlxText(13, 13);
-	textOptHPText.setFormat(Paths.font("determination.ttf"), 50, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	textOptHPText.setFormat(Paths.font("main.ttf"), 50, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 	textOptHPText.cameras = [camUI];
 	textOptHPText.borderSize = 3;
 	add(textOptHPText);
@@ -177,17 +177,17 @@ function create() {
 	textOptSpare.createFilledBar(0xFFAA0000, 0xFFFFF00);
 	add(textOptSpare);
 	
-	textOptSpareText = new FlxText(FlxG.width - 197, 23).setFormat(Paths.font("determination.ttf"), 50, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	textOptSpareText = new FlxText(FlxG.width - 197, 23).setFormat(Paths.font("main.ttf"), 50, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 	textOptSpareText.cameras = [camUI];
 	textOptSpareText.borderSize = 3;
 	add(textOptSpareText);
 	
-	textOptDescription = new FlxText(FlxG.width - 250, hudBase.y + 90, 250).setFormat(Paths.font("determination.ttf"), 50, FlxColor.GRAY, "left");
+	textOptDescription = new FlxText(FlxG.width - 250, hudBase.y + 90, 250).setFormat(Paths.font("main.ttf"), 50, FlxColor.GRAY, "left");
 	textOptDescription.cameras = [camUI];
 	textOptDescription.borderSize = 3;
 	add(textOptDescription);
 	
-	textOptTP = new FlxText(FlxG.width - 250, FlxG.height - 60, 250).setFormat(Paths.font("determination.ttf"), 50, FlxColor.ORANGE, "left");
+	textOptTP = new FlxText(FlxG.width - 250, FlxG.height - 60, 250).setFormat(Paths.font("main.ttf"), 50, FlxColor.ORANGE, "left");
 	textOptTP.cameras = [camUI];
 	textOptTP.borderSize = 3;
 	add(textOptTP);
@@ -531,7 +531,6 @@ function update() {
 	for (i=>enemy in enemies) {
 		if (enemy.hp <= 0) {
 			if (!enemy.tweened) {
-				FlxTween.tween(enemy, {x: FlxG.width-(enemy.width+25)}, 0.5, {ease: FlxEase.quadOut});
 				enemy.playAnim("dead");
 				new FlxTimer().start(0.5, (x) -> {
 					if (enemy != null) FlxTween.tween(enemy, {x: FlxG.width*1.1}, 0.32);
@@ -578,7 +577,7 @@ function updateTextOptions() {
 	var i = 0;
 	for (o in textOptions) {
 		var text = o.obj;
-		text.x = CoolUtil.fpsLerp(70, text.x, 0.9);
+		text.x = 70;
 		text.y = (hudBase.y + 95) + (60*(i-Math.max(curSel-2,0)));
 		if (text.y < (hudBase.y + 85))
 			text.visible = false;

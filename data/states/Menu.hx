@@ -29,7 +29,7 @@ function create(){
 	add(logo);
 	for (i in 0...stuff.length)
 	{
-		var text = new FlxText(125, (64 * i) + (FlxG.height / 2)).setFormat(Paths.font("determination.ttf"), 48, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, FlxColor.BLACK);
+		var text = new FlxText(125, (64 * i) + (FlxG.height / 2)).setFormat(Paths.font("main.ttf"), 48, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, FlxColor.BLACK);
 		text.borderSize = 5;
 		text.text = stuff[i];
 		text.screenCenter(FlxAxes.X);
@@ -73,7 +73,7 @@ function update(e:Float) {
 					FlxG.switchState(new ModState("World"));
 				case "Options":
 					canPress = false;
-					FlxG.switchState(new TreeMenu(() -> {}, true, "hola"));
+					FlxG.switchState(new ModState("Options"));
 				case "Back To Codename":
 					persistentUpdate = !(persistentDraw = true);
 					openSubState(new ModSwitchMenu());
