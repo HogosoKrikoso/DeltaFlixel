@@ -31,6 +31,7 @@ public static var keys:Dynamic = {
 var defaultSettings = [
 	"thirtyLags" => false,
 	"buttonOpacity" => 0.5,
+	"soul" => "Monster",
 ];
 
 function new() {
@@ -73,6 +74,17 @@ function update() {
 		for (btn in [acceptButton, backButton, menuButton, joystick]) {
 			btn.update();
 			btn.alpha = FlxG.save.data.buttonOpacity;
+			btn.color = switch (FlxG.save.data.soul) {
+				case "Monster": FlxColor.WHITE;
+				case "Determination": FlxColor.RED;
+				case "Integrity": FlxColor.BLUE;
+				case "Perseverance": FlxColor.PURPLE;
+				case "Patience": FlxColor.CYAN;
+				case "Kindness": FlxColor.GREEN;
+				case "Justice": FlxColor.YELLOW;
+				case "Bravery": FlxColor.ORANGE;
+			}
+			if (btn != joystick) btn.buttonColor = btn.color;
 		}
 		keys.UP = joystick.UP;
 		keys.DOWN = joystick.DOWN;
@@ -150,3 +162,6 @@ public static function reverseMin(v, max){
 }
 
 public static function getFPS() return Math.floor(FlxG.rawElapsed == 0 ? 0 : (1 / FlxG.rawElapsed));
+
+public static function getIDFromString(string, array) for (i=>string2 in array) if (string2 == string)
+	return i;
