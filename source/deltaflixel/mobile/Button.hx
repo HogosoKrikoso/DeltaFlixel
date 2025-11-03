@@ -1,4 +1,4 @@
-import deltaflixel.mobile.TouchUtil;
+import deltaflixel.utils.TouchUtil;
 
 class Button extends FlxSprite
 {
@@ -32,4 +32,5 @@ class Button extends FlxSprite
 			color = buttonColor;
 		}
 	}
+
 }
