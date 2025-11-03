@@ -1,3 +1,5 @@
+import deltaflixel.mobile.TouchUtil;
+
 class Button extends FlxSprite
 {
 	public var justPressed = false;
@@ -16,14 +18,14 @@ class Button extends FlxSprite
 	{
 		if (pressed) {
 			if(justPressed) justPressed = false;
-			if (!FlxG.mouse.pressed || !FlxG.mouse.overlaps(this, camera)) {
+			if (!TouchUtil.pressed || !TouchUtil.overlaps(this)) {
 				pressed = false;
 				justReleased = true;
 			}
 			color = FlxColor.YELLOW;
 		} else {
 			if(justReleased) justPressed = false;
-			if (FlxG.mouse.overlaps(this, camera) && FlxG.mouse.pressed) {
+			if (TouchUtil.overlaps(this) && TouchUtil.pressed) {
 				justPressed = true;
 				pressed = true;
 			}

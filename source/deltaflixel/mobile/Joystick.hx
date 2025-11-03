@@ -1,5 +1,5 @@
 import flixel.math.FlxPoint;
-import flixel.math.FlxMath;
+import flixel.input.touch.FlxTouch;
 
 class Joystick extends FlxSprite
 {
@@ -12,6 +12,7 @@ class Joystick extends FlxSprite
 	var button:FlxSprite;
 	var dragging = false;
 	var initialized = false;
+	var joystickTouch:FlxTouch;
 	
 	public var UP = false;
 	public var UP_P = false;
@@ -51,18 +52,22 @@ class Joystick extends FlxSprite
 			
 			// funny setup
 			for (spr in [base, thumb, button]) {
-				spr.alpha = alpha;
-				spr.visible = visible;
-				spr.cameras = cameras;
-				spr.camera = camera;
-				spr.color = color;
+				if(spr.alpha != alpha) spr.alpha = alpha;
+				if(spr.visible != visible) spr.visible = visible;
+				if(spr.cameras != cameras) spr.cameras = cameras;
+				if(spr.camera != camera) spr.camera = camera;
+				if(spr.color != color) spr.color = color;
 			}
 			thumb.scale.set(scale.x/2, scale.y/2);
 			thumb.offset.set(thumb.width/2, thumb.width/2);
-			base.x = x;
-			base.y = y;
-			base.scale.set(scale.x, scale.y);
-			base.updateHitbox();
+			if(base.x != x || base.y != y) {
+				base.x = x;
+				base.y = y;
+			}
+			if(base.scale.x != scale.x || base.scale.y != scale.y) {
+				base.scale.set(scale.x, scale.y);
+				base.updateHitbox();
+			}
 			
 			// centerrrrrrrrr
 			center.x = base.x + (base.width/2);
@@ -75,18 +80,21 @@ class Joystick extends FlxSprite
 			button.y = center.y - (radius/2.5);
 			
 			// cool update
-			mousePos = FlxG.mouse.getScreenPosition(camera);
 			if (dragging) {
+				mousePos = joystickTouch.getScreenPosition(mobileCam);
 				thumb.x = FlxMath.bound(mousePos.x, base.x, base.x+base.width);
 				thumb.y = FlxMath.bound(mousePos.y, base.y, base.y+base.height);
 				stick.x = (thumb.x - center.x) / base.width;
 				stick.y = (thumb.y - center.y) / base.height;
-				if (!FlxG.mouse.pressed || !FlxG.mouse.overlaps(button, camera)) dragging = false;
+				if (!joystickTouch.overlaps(button, camera) || !joystickTouch.pressed) dragging = false;
 			} else {
 				thumb.x = center.x;
 				thumb.y = center.y;
 				stick.x = stick.y = 0;
-				if (FlxG.mouse.overlaps(button, camera) && FlxG.mouse.pressed) dragging = true;
+				for (touch in FlxG.touches.list) if (touch.overlaps(button, camera) && touch.pressed) {
+					joystickTouch = touch;
+					dragging = true;
+				}
 			}
 			
 			// stupid key spaghetti code
