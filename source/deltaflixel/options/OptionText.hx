@@ -1,6 +1,6 @@
 class OptionText extends FlxText
 {
-	public var save:FlxSave = FlxG.save;
+	public var save:Dynamic = DeltaFlixelOptions.data;
 	public var name:String = "example";
 	public var displayName:String = "Example";
 	public var type:String = "";
@@ -10,7 +10,8 @@ class OptionText extends FlxText
 	public var max = 10;
 	public var step = 1;
 	public var strings = ["A", "B", "C"];
-	public function new(DisplayName = "Example", Type:String = "", ?Data, Save:FlxSave = FlxG.save.data, Name:String = "example")
+	public var func;
+	public function new(DisplayName = "Example", Type:String = "", ?Data, Save:Dynamic = DeltaFlixelOptions.data, Name:String = "example")
 	{
 		super();
 		setFormat(Paths.font("main.ttf"), 48, FlxColor.WHITE, "center");
@@ -23,11 +24,12 @@ class OptionText extends FlxText
 				if(Data.step != null && type == "float") step = Data.step;
 				if(Data.min != null) min = Data.min;
 				if(Data.max != null) max = Data.max;
-			}
-			if (type == "string") {
+			} else if(type == "string") {
 				strings = Data;
 				min = 0;
 				max = strings.length-1;
+			} else if(type != "bool") {
+				func = Data;
 			}
 		}
 		if (type != "string") inMenuValue = Reflect.field(save, name);
