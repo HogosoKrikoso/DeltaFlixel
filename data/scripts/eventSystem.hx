@@ -44,17 +44,17 @@ public function doTextStuff(?str:String = "", ?keepText:Bool = false, ?noAccept:
 	var lastChar = "";
 	if (!noAccept) {
 		conditionFunction = () -> {
-			if(controls.BACK) {
+			if(keys.BACK) {
 				textTimer.cancel();
 				dialouge.text = StringTools.replace(str, "|w", "");
 				conditionFunction = () -> {
-					if(controls.ACCEPT) {
+					if(keys.ACCEPT) {
 						endDialouge(keepText);
 						return true;
 					}
 				}
 			}
-			if(controls.SWITCHMOD) {
+			if(keys.SWITCHMOD) {
 				textTimer.cancel();
 				endDialouge(keepText);
 				return true;
@@ -63,7 +63,7 @@ public function doTextStuff(?str:String = "", ?keepText:Bool = false, ?noAccept:
 		}
 	} else {
 		conditionFunction = () -> {
-			if(controls.BACK || controls.SWITCHMOD) {
+			if(keys.BACK || keys.SWITCHMOD) {
 				textTimer.cancel();
 				dialouge.text = StringTools.replace(str, "|w", "");
 				return true;
@@ -101,7 +101,7 @@ public function doTextStuff(?str:String = "", ?keepText:Bool = false, ?noAccept:
 		if (chars.length == 0) {
 			if (!noAccept) {
 				conditionFunction = () -> {
-					if(controls.ACCEPT) {
+					if(keys.ACCEPT) {
 						endDialouge(keepText);
 						return true;
 					}
