@@ -1,11 +1,16 @@
 import deltaflixel.options.OptionText;
 
 var list:FlxTypedGroup<OptionText> = [
-	new OptionText("30 FPS", "bool", null, FlxG.save.data, "thirtyLags"),
+	new OptionText("[ GRAPHICS N' PERFORMANCE ]"),
+	new OptionText("30 FPS", "bool", null, DeltaFlixelOptions.data, "thirtyLags"),
 	#if mobile
 		new OptionText("[ TOUCH CONTROLS ]"),
-		new OptionText("Opacity", "float", {min: 0, max: 1, step: 0.1}, FlxG.save.data, "buttonOpacity"),
-		new OptionText("Color", "string", ["Monster","Determination","Integrity","Perseverance","Patience","Kindness","Justice","Bravery"], FlxG.save.data, "soul"),
+		new OptionText("Opacity", "float", {min: 0, max: 1, step: 0.1}, DeltaFlixelOptions.data, "buttonOpacity"),
+		new OptionText("Color", "string", ["Monster","Determination","Integrity","Perseverance","Patience","Kindness","Justice","Bravery"], DeltaFlixelOptions.data, "soul"),
+		new OptionText("Edit Controls", "", () -> {
+			persistentUpdate = !(persistentDraw = true);
+			openSubState(new ModSubState("ControlsEditorSubState"));
+		}),
 	#end
 ];
 
@@ -36,7 +41,7 @@ function update(e:Float) {
 		text.update();
 		if (text.type == "int" || text.type == "float" || text.type == "string" || text.type == "bool") text.x = 74;
 		else text.screenCenter(FlxAxes.X);
-		text.y = 10 + (50*i);
+		text.y = 30 + (50*i);
 	}
 	
 	if (keys.UP_P)
@@ -55,6 +60,11 @@ function update(e:Float) {
 	if ((keys.LEFT_P || keys.RIGHT_P) && sel.type == "bool")
 		sel.swapBool();
 		
-	if (keys.BACK)
+	if (keys.ACCEPT && sel.type != "int" && sel.type != "float" && sel.type != "string" && sel.func != null)
+		sel.func();
+		
+	if (keys.BACK) {
+		DeltaFlixelOptions.flush();
 		FlxG.switchState(new ModState("Menu"));
+	}
 }
