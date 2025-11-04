@@ -5,6 +5,10 @@ import openfl.text.TextFormat;
 import deltaflixel.mobile.Joystick;
 import deltaflixel.mobile.Button;
 import openfl.system.Capabilities;
+import flixel.util.FlxSave;
+
+public static var DeltaFlixelOptions:FlxSave;
+public static var DeltaFlixelControls:FlxSave;
 
 var redirectStates:Map<FlxState, String> = [
 	//BetaWarningState => "Play",
@@ -34,10 +38,24 @@ var defaultSettings = [
 	"soul" => "Monster",
 ];
 
+public static var buttonPositions = [];
+
 function new() {
-	for (key in defaultSettings.keys()) if (!Reflect.hasField(FlxG.save.data, key))
-		Reflect.setField(FlxG.save.data, key, defaultSettings[key]);
+	DeltaFlixelOptions = new FlxSave();
+	DeltaFlixelOptions.bind("deltaflixel");
+	DeltaFlixelControls = new FlxSave();
+	DeltaFlixelControls.bind("deltaflixel_mobile");
+	for (key in defaultSettings.keys()) if (!Reflect.hasField(DeltaFlixelOptions.data, key))
+		Reflect.setField(DeltaFlixelOptions.data, key, defaultSettings[key]);
 	setGameResolution(1280, 960, false);
+	buttonPositions = [
+		"joystick" => [100, FlxG.height-460],
+		"accept" => [FlxG.width - 400, FlxG.height-260],
+		"back" => [FlxG.width - 300, FlxG.height-460],
+		"menu" => [FlxG.width - 200, FlxG.height-260],
+	];
+	for (key in buttonPositions.keys()) if (!Reflect.hasField(DeltaFlixelControls.data, key))
+		Reflect.setField(DeltaFlixelControls.data, key, buttonPositions[key]);
 }
 
 function preStateSwitch() {
@@ -55,13 +73,14 @@ function postStateSwitch() {
 	#if mobile
 		mobileCam = new FlxCamera();
 	    FlxG.cameras.add(mobileCam, false).bgColor = 0;
-		joystick = new Joystick(100, 500, 1280, "ui/mobile/joystick", "ui/mobile/joystick");
+		joystick = new Joystick(100, FlxG.height-460, 1280, "ui/mobile/joystick", "ui/mobile/joystick");
 		joystick.scale.set(2,2);
-		acceptButton = new Button(FlxG.width - 400, 700, "ui/mobile/z");
-		backButton = new Button(FlxG.width - 300, 500, "ui/mobile/x");
-		menuButton = new Button(FlxG.width - 200, 700, "ui/mobile/c");
+		acceptButton = new Button(FlxG.width - 400, FlxG.height-260, "ui/mobile/z");
+		backButton = new Button(FlxG.width - 300, FlxG.height-460, "ui/mobile/x");
+		menuButton = new Button(FlxG.width - 200, FlxG.height-260, "ui/mobile/c");
 	    joystick.startJoystick();
 		joystick.camera = mobileCam;
+		updateControlsPosition();
 	    for (btn in [acceptButton, backButton, menuButton]) FlxG.state.add(btn).camera = mobileCam;
     #end
     Framerate.codenameBuildField.visible = Framerate.memoryCounter.memoryPeakText.visible = Framerate.memoryCounter.memoryText.visible = false;
@@ -73,8 +92,8 @@ function update() {
 	#if mobile
 		for (btn in [acceptButton, backButton, menuButton, joystick]) {
 			btn.update();
-			btn.alpha = FlxG.save.data.buttonOpacity;
-			btn.color = switch (FlxG.save.data.soul) {
+			btn.alpha = DeltaFlixelOptions.data.buttonOpacity;
+			btn.color = switch (DeltaFlixelOptions.data.soul) {
 				case "Monster": FlxColor.WHITE;
 				case "Determination": FlxColor.RED;
 				case "Integrity": FlxColor.BLUE;
@@ -109,14 +128,14 @@ function update() {
 		keys.DOWN_P = controls.DOWN_P;
 		keys.LEFT_P = controls.LEFT_P;
 		keys.RIGHT_P = controls.RIGHT_P;
-		keys.ACCEPT = FlxG.keys.justPressed.Z;
-		keys.ACCEPT_HOLD = FlxG.keys.pressed.Z;
-		keys.BACK = FlxG.keys.justPressed.X;
-		keys.BACK_HOLD = FlxG.keys.pressed.X;
-		keys.MENU = FlxG.keys.justPressed.X;
-		keys.MENU_HOLD = FlxG.keys.pressed.X;
+		keys.ACCEPT = FlxG.keys.justPressed.Z || controls.ACCEPT;
+		keys.ACCEPT_HOLD = FlxG.keys.pressed.Z || controls.ACCEPT_HOLD;
+		keys.BACK = FlxG.keys.justPressed.X || controls.BACK;
+		keys.BACK_HOLD = FlxG.keys.pressed.X || controls.BACK_HOLD;
+		keys.MENU = FlxG.keys.justPressed.C;
+		keys.MENU_HOLD = FlxG.keys.pressed.C;
 	#end
-	FlxG.updateFramerate = FlxG.drawFramerate = FlxG.save.data.thirtyLags ? 30 : 60;
+	FlxG.updateFramerate = FlxG.drawFramerate = DeltaFlixelOptions.thirtyLags ? 30 : 60;
 }
 
 function destroy() {
@@ -152,6 +171,14 @@ public static function playMusic(path, ?volume:Float = 1, ?loop:Bool = false, ?f
 	if (FlxG.sound.music != null) FlxG.sound.music.stop();
 	FlxG.sound.playMusic(Paths.music(path), volume, loop);
 	musicID = path;
+}
+
+public static function updateControlsPosition() {
+	btnPos = DeltaFlixelControls.data;
+	joystick.setPosition(btnPos.joystick[0], btnPos.joystick[1]);
+	acceptButton.setPosition(btnPos.accept[0], btnPos.accept[1]);
+	backButton.setPosition(btnPos.back[0], btnPos.back[1]);
+	menuButton.setPosition(btnPos.menu[0], btnPos.menu[1]);
 }
 
 public static function reverseMin(v, max){
