@@ -22,7 +22,7 @@ class Button extends FlxSprite
 				pressed = false;
 				justReleased = true;
 			}
-			color = FlxColor.YELLOW;
+			color = buttonColor == FlxColor.YELLOW ? FlxColor.ORANGE : FlxColor.YELLOW;
 		} else {
 			if(justReleased) justPressed = false;
 			if (TouchUtil.overlaps(this) && TouchUtil.pressed) {
