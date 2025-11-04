@@ -4,14 +4,14 @@ import flixel.input.touch.FlxTouch;
 class Joystick extends FlxSprite
 {
 	var center:FlxPoint = FlxPoint.get();
-	var thumb:FlxSprite;
-	var base:FlxSprite;
+	public var thumb:FlxSprite;
+	public var base:FlxSprite;
 	public var stick:FlxPoint = FlxPoint.get();
 	public var deadzone:Float = 0.2;
 	public var radius:Float = 1280.0;
-	var button:FlxSprite;
+	public var button:FlxSprite;
 	var dragging = false;
-	var initialized = false;
+	public var initialized = false;
 	var joystickTouch:FlxTouch;
 	
 	public var UP = false;
@@ -33,45 +33,45 @@ class Joystick extends FlxSprite
 	}
 	
 	public function startJoystick() {
-		FlxG.state.add(base);
-		FlxG.state.add(thumb);
-		FlxG.state.add(button);
+		var state = FlxG.state.subState != null ? FlxG.state.subState : FlxG.state;
+		state.add(base);
+		state.add(thumb);
+		state.add(button);
 		initialized = true;
 	}
 	
 	public function stopJoystick() {
-		FlxG.state.add(base);
-		FlxG.state.add(thumb);
-		FlxG.state.add(button);
+		var state = FlxG.state.subState != null ? FlxG.state.subState : FlxG.state;
+		state.remove(base);
+		state.remove(thumb);
+		state.remove(button);
 		initialized = false;
 	}
 	
 	public function update(?elapsed)
 	{
+		// funny setup
+		for (spr in [base, thumb, button]) {
+			if(spr.alpha != alpha) spr.alpha = alpha;
+			if(spr.visible != visible) spr.visible = visible;
+			if(spr.cameras != cameras) spr.cameras = cameras;
+			if(spr.camera != camera) spr.camera = camera;
+			if(spr.color != color) spr.color = color;
+		}
+		thumb.scale.set(scale.x/2, scale.y/2);
+		thumb.offset.set(thumb.width/2, thumb.width/2);
+		if(base.x != x || base.y != y) {
+			base.x = x;
+			base.y = y;
+		}
+		if(base.scale.x != scale.x || base.scale.y != scale.y) {
+			base.scale.set(scale.x, scale.y);
+			base.updateHitbox();
+		}
+		// centerrrrrrrrr
+		center.x = base.x + (base.width/2);
+		center.y = base.y + (base.height/2);
 		if (initialized) {
-			
-			// funny setup
-			for (spr in [base, thumb, button]) {
-				if(spr.alpha != alpha) spr.alpha = alpha;
-				if(spr.visible != visible) spr.visible = visible;
-				if(spr.cameras != cameras) spr.cameras = cameras;
-				if(spr.camera != camera) spr.camera = camera;
-				if(spr.color != color) spr.color = color;
-			}
-			thumb.scale.set(scale.x/2, scale.y/2);
-			thumb.offset.set(thumb.width/2, thumb.width/2);
-			if(base.x != x || base.y != y) {
-				base.x = x;
-				base.y = y;
-			}
-			if(base.scale.x != scale.x || base.scale.y != scale.y) {
-				base.scale.set(scale.x, scale.y);
-				base.updateHitbox();
-			}
-			
-			// centerrrrrrrrr
-			center.x = base.x + (base.width/2);
-			center.y = base.y + (base.height/2);
 			
 			// radius
 			button.scale.set(radius, radius);
@@ -142,6 +142,10 @@ class Joystick extends FlxSprite
 					RIGHT = false;
 				}
 			}
+		} else {
+			thumb.x = center.x;
+			thumb.y = center.y;
+			stick.x = stick.y = 0;
 		}
 	}
 }
