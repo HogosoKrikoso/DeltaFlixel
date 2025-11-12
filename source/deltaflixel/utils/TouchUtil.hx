@@ -5,7 +5,7 @@ import flixel.input.touch.FlxTouch;
  * ...
  * @author: Karim Akra
  */
- // Karim ur da best
+ // Karim Akra ur da best
 class TouchUtil
 {
 	public static var pressed(get, never):Bool;
@@ -17,9 +17,11 @@ class TouchUtil
 	public static function overlaps(object:FlxObject, ?camera:FlxCamera)
 	{
 		var cam = (camera != null) ? camera : object.camera;
-		for (touch in FlxG.touches.list)
-			if (touch.overlaps(object, cam))
+		for (touch in FlxG.touches.list) {
+			pos = touch.getScreenPosition(cam);
+			if (pos.x > object.x && pos.x < (object.x + object.width) && pos.y > object.y && pos.y < (object.y + object.height))
 				return true;
+		}
 
 		return false;
 	}
