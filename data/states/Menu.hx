@@ -23,9 +23,10 @@ function create(){
 	background.updateHitbox();
 	add(background);
 	logo = new FlxSprite().loadGraphic(Paths.image('logo'));
-	logo.scale.set(1, 1);
-	logo.updateHitbox();
 	logo.screenCenter().y -= 300;
+	logoShadow = new FlxSprite(logo.x+10, logo.y+10).loadGraphic(Paths.image('logo'));
+	logoShadow.color = FlxColor.BLACK;
+	add(logoShadow);
 	add(logo);
 	for (i in 0...stuff.length)
 	{
