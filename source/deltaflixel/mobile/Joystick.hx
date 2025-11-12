@@ -34,17 +34,13 @@ class Joystick extends FlxSprite
 	
 	public function startJoystick() {
 		var state = FlxG.state.subState != null ? FlxG.state.subState : FlxG.state;
-		state.add(base);
-		state.add(thumb);
-		state.add(button);
+		for (spr in [base, thumb, button]) state.add(spr);
 		initialized = true;
 	}
 	
 	public function stopJoystick() {
 		var state = FlxG.state.subState != null ? FlxG.state.subState : FlxG.state;
-		state.remove(base);
-		state.remove(thumb);
-		state.remove(button);
+		for (spr in [base, thumb, button]) state.remove(spr);
 		initialized = false;
 	}
 	
@@ -81,19 +77,22 @@ class Joystick extends FlxSprite
 			
 			// cool update
 			if (dragging) {
-				mousePos = joystickTouch.getScreenPosition(mobileCam);
-				thumb.x = FlxMath.bound(mousePos.x, base.x, base.x+base.width);
-				thumb.y = FlxMath.bound(mousePos.y, base.y, base.y+base.height);
+				pos = joystickTouch.getScreenPosition(camera);
+				thumb.x = FlxMath.bound(pos.x, base.x, base.x+base.width);
+				thumb.y = FlxMath.bound(pos.y, base.y, base.y+base.height);
 				stick.x = (thumb.x - center.x) / base.width;
 				stick.y = (thumb.y - center.y) / base.height;
-				if (!joystickTouch.overlaps(button, camera) || !joystickTouch.pressed) dragging = false;
+				if (!(pos.x > button.x && pos.x < (button.x + button.width) && pos.y > button.y && pos.y < (button.y + button.height)) || !joystickTouch.pressed) dragging = false;
 			} else {
 				thumb.x = center.x;
 				thumb.y = center.y;
 				stick.x = stick.y = 0;
-				for (touch in FlxG.touches.list) if (touch.overlaps(button, camera) && touch.pressed) {
-					joystickTouch = touch;
-					dragging = true;
+				for (touch in FlxG.touches.list) {
+					pos = touch.getScreenPosition(camera);
+					if (pos.x > button.x && pos.x < (button.x + button.width) && pos.y > button.y && pos.y < (button.y + button.height) && touch.pressed) {
+						joystickTouch = touch;
+						dragging = true;
+					}
 				}
 			}
 			
