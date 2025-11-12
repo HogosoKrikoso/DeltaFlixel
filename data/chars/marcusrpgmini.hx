@@ -1,4 +1,4 @@
-import deltaflixel.objects.DeltaCharacter;
+/*import deltaflixel.objects.DeltaCharacter;
 var character = new DeltaCharacter("Marcus", "marcusrpgmini", "characters/marcusrpgmini", [], 3.5, 9999, 0xFFFF0000, true, [
 	{
 		text: "",
@@ -20,4 +20,6 @@ var character = new DeltaCharacter("Marcus", "marcusrpgmini", "characters/marcus
 		},
 	},
 ], 0, 0);
-characters.push(character);
+characters.push(character);*/
+// marcus esta obsoleto por el momento
+// mañana lo arreglo
