@@ -181,7 +181,7 @@ public static function reverseMin(v, max){
 		return v;
 }
 
-public static function getFPS() return Math.floor(FlxG.rawElapsed == 0 ? 0 : (1 / FlxG.rawElapsed));
+public static function getFPS() return Math.floor(FlxG.rawElapsed == 0 ? 30 : (1 / FlxG.rawElapsed));
 
 public static function getIDFromString(string, array) for (i=>string2 in array) if (string2 == string) return i;
 

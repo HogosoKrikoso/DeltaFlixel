@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="19" height="30" tilewidth="40" tileheight="40" infinite="0" nextlayerid="30" nextobjectid="1">
+ <tileset firstgid="1" source="field.tsx"/>
+ <group id="5" name="decos">
+  <imagelayer id="6" name="tree-right" offsetx="100" offsety="70">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="29" name="tree-right" offsetx="22" offsety="150">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="19" name="tree-right" offsetx="8" offsety="256">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="20" name="tree-right" offsetx="10" offsety="376">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="21" name="tree-right" offsetx="-2" offsety="468">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="22" name="tree-right" offsetx="4" offsety="580">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="23" name="tree-right" offsetx="18" offsety="704">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="24" name="tree-right" offsetx="48" offsety="820">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="25" name="tree-right" offsetx="60" offsety="942">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="26" name="tree-right" offsetx="60" offsety="1014">
+   <image source="world/tree-right.png" width="210" height="182"/>
+  </imagelayer>
+  <imagelayer id="7" name="tree" offsetx="468" offsety="100">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="27" name="tree" offsetx="522" offsety="236">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="8" name="tree" offsetx="528" offsety="356">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="9" name="tree" offsetx="538" offsety="494">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="10" name="tree" offsetx="550" offsety="652">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="11" name="tree" offsetx="544" offsety="778">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="12" name="tree" offsetx="532" offsety="872">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="16" name="tree" offsetx="532" offsety="872">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="17" name="tree" offsetx="442" offsety="920">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="18" name="tree" offsetx="424" offsety="1026">
+   <image source="world/tree-left.png" width="210" height="181"/>
+  </imagelayer>
+  <imagelayer id="4" name="dec" offsetx="290" offsety="0">
+   <image source="world/giantdarkdoor2.png" width="180" height="155"/>
+  </imagelayer>
+ </group>
+ <layer id="1" name="tile" width="19" height="30">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,20,20,20,20,20,0,0,0,0,0,0,0,
+0,0,0,0,0,0,21,1,1,1,1,1,19,0,0,0,0,0,0,
+0,0,0,0,0,21,1,1,1,1,1,1,1,19,0,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,1,13,0,0,0,0,
+0,0,0,0,15,1,1,1,1,1,1,1,1,7,0,0,0,0,0,
+0,0,0,0,0,9,1,1,1,1,1,1,7,0,0,0,0,0,0,
+0,0,0,0,0,15,1,1,1,1,1,1,13,0,0,0,0,0,0,
+0,0,0,0,0,15,1,1,1,1,1,1,13,0,0,0,0,0,0,
+0,0,0,0,0,15,1,1,1,1,1,1,13,0,0,0,0,0,0,
+0,0,0,0,0,15,1,1,1,1,1,1,13,0,0,0,0,0,0,
+0,0,0,0,0,15,1,1,1,1,1,7,0,0,0,0,0,0,0,
+0,0,0,0,0,15,1,1,1,1,1,13,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="walls" width="19" height="30">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,2,2,2,2,2,2,2,0,0,0,0,0,0,
+0,0,0,0,0,2,2,0,0,0,0,0,2,2,0,0,0,0,0,
+0,0,0,0,2,2,0,0,0,0,0,0,0,2,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,
+0,0,0,0,2,0,0,0,0,0,0,0,0,2,2,0,0,0,0,
+0,0,0,0,2,2,0,0,0,0,0,0,2,2,0,0,0,0,0,
+0,0,0,0,0,2,0,0,0,0,0,0,2,0,0,0,0,0,0,
+0,0,0,0,0,2,0,0,0,0,0,0,2,0,0,0,0,0,0,
+0,0,0,0,0,2,0,0,0,0,0,0,2,0,0,0,0,0,0,
+0,0,0,0,0,2,0,0,0,0,0,0,2,0,0,0,0,0,0,
+0,0,0,0,0,2,0,0,0,0,0,2,2,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

@@ -29,7 +29,7 @@ public var layers = [];
 public var worldBounds = [0,0,0,0];
 
 function create(){
-	loadRoom("test");
+	loadRoom("test1");
 	
 	importScript("data/chars/kris");
 	importScript("data/chars/ralsei");
@@ -54,7 +54,6 @@ function create(){
 }
 
 function update(){
-	trace(FlxG.rawElapsed*1000);
 	dialouge.fieldWidth = overworldDialougeBox.width - (100 - dialouge.offset.x);
 	if (keys.MENU) FlxG.resetState();
 	for (i=>character in characters) {
@@ -79,7 +78,7 @@ function update(){
 
 function loadRoom(roomName){
 	var scale = 2;
-	var roomXmlString = Assets.getText(Paths.xml("rooms/" + roomName));
+	var roomXmlString = Assets.getText(Paths.file("data/rooms/" + roomName + ".tmx"));
     var roomXml = Xml.parse(roomXmlString);
     var mapElement = roomXml.firstElement();
     var mapWidth = Std.parseInt(mapElement.get("width"));
@@ -97,7 +96,7 @@ function loadRoom(roomName){
             case "tileset":
                 var firstgid = element.get("firstgid");
 				var source = element.get("source");
-				var tilesetXmlString = Assets.getText(Paths.xml("tilesets/" + source));
+				var tilesetXmlString = Assets.getText(Paths.file("data/tilesets/" + source));
 				var tilesetXml = Xml.parse(tilesetXmlString);
 				var tilesetElement = tilesetXml.firstElement();
 				image = tilesetElement.firstElement();
@@ -110,15 +109,16 @@ function loadRoom(roomName){
             case "group":
                 var layerName = element.get("name");
 				var layerGroup:FlxTypedGroup<FlxSprite> = new FlxTypedGroup();
+
 		        for (sprite in element.elements()) if (sprite.nodeName == "imagelayer") {
 					var x = Std.parseFloat(sprite.get("offsetx"));
-		      	  var y = Std.parseFloat(sprite.get("offsety"));
+		      	    var y = Std.parseFloat(sprite.get("offsety"));
 					image = sprite.firstElement();
 		            if (image.nodeName == "image") {
 		                var source = image.get("source");
 						var width = Std.parseFloat(image.get("width"));
-		      		  var height = Std.parseFloat(image.get("height"));
-	         		   sprite = new FlxSprite(x*scale,y*scale).loadGraphic(Paths.image(source));
+		      		    var height = Std.parseFloat(image.get("height"));
+	         		    sprite = new FlxSprite(x*scale,y*scale).loadGraphic(Paths.image(source.replace('../images/', '').replace('.png', '')));
 			        	layerGroup.add(sprite);
 						sprite.setGraphicSize(width*scale, height*scale);
 						sprite.updateHitbox();
@@ -130,7 +130,8 @@ function loadRoom(roomName){
 	            var tilesetID = element.exists("tilesetgid") ? element.get("tilesetgid") : "1";
 				var layerName = element.get("name");
 				var layerGroup:FlxTypedGroup<FlxSprite> = new FlxTypedGroup();
-                var tileArray = parseData(element.get("data"));
+                var tileArray = parseRawToArray(element.firstElement().firstChild().toString(), mapWidth); // From layer => data => values => String
+
                 for(y=>row in tileArray) for(x=>til in row) if(til > 0){
 					tile = new FlxSprite(tileWidth*x,tileHeight*y).loadGraphicFromSprite(tilesets[tilesetID]);
 		        	tile.animation.add("idle",[til-1],1,true);
@@ -148,11 +149,28 @@ function loadRoom(roomName){
     if (Assets.exists("data/rooms/" + roomName + ".hx")) importScript("data/rooms/" + roomName);
 }
 
-function parseData(str)
+/** 
+ * [Parses the raw string of tiles proportioned with its width, to an Array]
+ * @param str String containing all the tiles.
+ * @param width Width in tiles of the map.
+ * 
+ * @returns Array
+ */
+function parseRawToArray(str:Array, width:Float)
 {
-    //var cleanData = StringTools.trim(csvData);
-    var rows = str.split("|");
+    //var cleanData = StringTools.trim(csvData);	
+    var rows = [];
     var result = [];
+	var _count:Int = 0;
+	var _from:Int = 0;
+	for(idx in 0...str.length) if(str.charAt(idx) == ",") {
+		_count++;
+		if(_count%width==0 && _count != 0) {
+			rows.push(str.substring(_from > 0 ? _from+1 : _from, idx));
+			 _from = idx;
+		}	
+	}
+
     for (i=>row in rows) {
         var tiles = row.split(",");
         var parsedRow = [];

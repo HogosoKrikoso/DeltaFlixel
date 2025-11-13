@@ -124,8 +124,8 @@ class DeltaCharacter extends FunkinSprite
 			x += velocity.x / getFPS();
 			y += velocity.y / getFPS();
 			#else
-			x += velocity.x / 30;
-			y += velocity.y / 30;
+			x += velocity.x / getFPS();
+			y += velocity.y / getFPS();
 			#end
 			action = "idle";
 			if ((velocity.x != 0 || velocity.y != 0)) action = "walk";
