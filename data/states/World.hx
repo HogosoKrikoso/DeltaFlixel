@@ -17,6 +17,8 @@ using StringTools;
 importScript("data/scripts/eventSystem");
 
 public var characters:Map = [];
+importScript("data/chars/kris");
+importScript("data/chars/ralsei");
 
 public var camUI = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 for (u in [camUI]) {
@@ -31,11 +33,7 @@ public var worldBounds = [0,0,0,0];
 function create(){
 	loadRoom("test2");
 	
-	importScript("data/chars/kris");
-	importScript("data/chars/ralsei");
 
-	
-	for (character in characters) add(character);
 	
 	overworldDialougeBox = new FlxSprite(0, 0).loadGraphic(Paths.image("ui/dialouge/textBox"));
 	overworldDialougeBox.scale.set(2,2);
@@ -148,6 +146,9 @@ function loadRoom(roomName){
 				}
 				add(layerGroup);
 				if (layerGroup.length > 0) layers.set(layerName, layerGroup);
+
+			case "objectgroup":
+				if(element.get("name") == "playerSpawn") { for (character in characters) add(character); }
         }
     }
     if (Assets.exists("data/rooms/" + roomName + ".hx")) importScript("data/rooms/" + roomName);
