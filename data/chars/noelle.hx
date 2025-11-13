@@ -1,4 +1,4 @@
-import deltaflixel.objects.DeltaCharacter;
+/*import deltaflixel.objects.DeltaCharacter;
 var character = new DeltaCharacter("Noelle", "Noelle", "characters/noelle", [
 	{
 		name: "idle",
@@ -13,4 +13,5 @@ var character = new DeltaCharacter("Noelle", "Noelle", "characters/noelle", [
 		func: () -> {},
 	},
 ], 0, 0);
-characters.push(character);
+characters.push(character);*/
+// unfinished

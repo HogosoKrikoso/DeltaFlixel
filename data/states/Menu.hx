@@ -3,7 +3,7 @@ import flixel.text.FlxTextBorderStyle;
 import funkin.options.TreeMenu;
 
 var stuff:Array<String> = [
-	"Save Files",
+	"Battle",
 	"World",
 	"Options",
 	"Back To Codename",
@@ -14,13 +14,6 @@ var canPress:Bool = true;
 var stuffGroup:FlxTypedGroup<FlxSprite> = [];
 var soul:FlxSprite;
 
-var confirmSound:FlxSound = FlxG.sound.load(Paths.sound("menu/confirm"));
-var scrollSound:FlxSound = FlxG.sound.load(Paths.sound("menu/scroll"));
-var cancelSound:FlxSound = FlxG.sound.load(Paths.sound("menu/cancel"));
-var music:FlxSound = FlxG.sound.load(Paths.music("quiet_church"));
-music.looped = true;
-music.play();
-
 function create(){
 	FlxG.camera.scroll.y = -100;
 	FlxG.camera.flash(FlxColor.BLACK, 1);
@@ -30,13 +23,14 @@ function create(){
 	background.updateHitbox();
 	add(background);
 	logo = new FlxSprite().loadGraphic(Paths.image('logo'));
-	logo.scale.set(1, 1);
-	logo.updateHitbox();
 	logo.screenCenter().y -= 300;
+	logoShadow = new FlxSprite(logo.x+10, logo.y+10).loadGraphic(Paths.image('logo'));
+	logoShadow.color = FlxColor.BLACK;
+	add(logoShadow);
 	add(logo);
 	for (i in 0...stuff.length)
 	{
-		var text = new FlxText(125, (64 * i) + (FlxG.height / 2)).setFormat(Paths.font("determination.ttf"), 48, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, FlxColor.BLACK);
+		var text = new FlxText(125, (64 * i) + (FlxG.height / 2)).setFormat(Paths.font("main.ttf"), 48, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, FlxColor.BLACK);
 		text.borderSize = 5;
 		text.text = stuff[i];
 		text.screenCenter(FlxAxes.X);
@@ -47,34 +41,36 @@ function create(){
 	soul.scale.set(3, 3);
 	soul.updateHitbox();
 	add(soul);
+	playMusic("quiet_church", 1, true);
 }
 
 function changeSelection(number:Int = 0){
 	curSelected = FlxMath.wrap(curSelected + number, 0, stuff.length-1);
-	scrollSound.play(true);
+	playSound("menu/scroll", true);
 }
 
 function update(e:Float) {
 	soul.x = lerp(soul.x, stuffGroup[curSelected].x-64, 0.1);
 	soul.y = lerp(soul.y, stuffGroup[curSelected].y, 0.1);
 	for (i in 0...stuffGroup.length)
-		stuffGroup[i].color = (i == curSelected) ? FlxColor.YELLOW : FlxColor.WHITE;
+		stuffGroup[i].color = (i == curSelected) ? FlxColor.WHITE : FlxColor.GRAY;
 	if (canPress) {
-		if (controls.UP_P)
+		if (keys.UP_P)
 			changeSelection(-1);
 		
-		if (controls.DOWN_P)
+		if (keys.DOWN_P)
 			changeSelection(1);
 			
-		if (controls.ACCEPT) {
-			confirmSound.play(true);
+		if (keys.ACCEPT) {
+			playSound("menu/confirm", true);
 			switch (stuff[curSelected]) {
-				case "Save Files":
+				case "Battle":
 					canPress = false;
+					FlxG.sound.music.stop();
 					FlxG.switchState(new ModState("BattleState"));
 				case "World":
 					canPress = false;
-					#if android
+					FlxG.sound.music.stop();
 					FlxG.switchState(new ModState("World"));
 					#end
 					#if windows
@@ -82,7 +78,7 @@ function update(e:Float) {
 					#end
 				case "Options":
 					canPress = false;
-					FlxG.switchState(new TreeMenu(() -> {}, true, "hola"));
+					FlxG.switchState(new ModState("Options"));
 				case "Back To Codename":
 					persistentUpdate = !(persistentDraw = true);
 					openSubState(new ModSwitchMenu());
@@ -90,8 +86,3 @@ function update(e:Float) {
 		}
 	}
 }
-
-#if mobile
-	addTouchPad("UP_DOWN", "A");
-	addTouchPadCamera();
-#end

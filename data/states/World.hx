@@ -1,7 +1,6 @@
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxDirectionFlags;
 import flixel.text.FlxTextBorderStyle;
-
 import flixel.tile.FlxBaseTilemap.FlxTilemapAutoTiling;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.addons.util.FlxSimplex;
@@ -10,18 +9,14 @@ import funkin.menus.ModSwitchMenu;
 import funkin.menus.credits.CreditsMain;
 import funkin.options.OptionsMenu;
 import flixel.util.FlxDirectionFlags;
-
-#if windows
-import flixel.addons.editors.tiled.TiledMap;
-import flixel.addons.editors.tiled.TiledObjectLayer;
-#end
+import Xml;
+import flixel.util.FlxSort;
 
 using StringTools;
 
 importScript("data/scripts/eventSystem");
 
 public var characters:Array = [];
-var tileset;
 
 public var camUI = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 for (u in [camUI]) {
@@ -29,11 +24,16 @@ for (u in [camUI]) {
 	FlxG.cameras.add(u, false);
 }
 
+public var tilesets = [];
+public var layers = [];
+public var worldBounds = [0,0,0,0];
+
 function create(){
-	tileset = new FlxSprite().loadGraphic(Paths.image("world/field"),40,40);
+	loadRoom("test");
+	
 	importScript("data/chars/kris");
-	add(characters[0]);
-	//loadMap();
+	importScript("data/chars/ralsei");
+	for (character in characters) add(character);
 	
 	overworldDialougeBox = new FlxSprite(0, 0).loadGraphic(Paths.image("ui/dialouge/textBox"));
 	overworldDialougeBox.scale.set(2,2);
@@ -42,9 +42,7 @@ function create(){
 	overworldDialougeBox.cameras = [camUI];
 	add(overworldDialougeBox);
 	
-	dialouge = new FlxText(overworldDialougeBox.x + 50, overworldDialougeBox.y + 50).setFormat(Paths.font("determination.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.SHADOW, 0xFF000088);
-	dialouge.text = "puto";
-	dialouge.borderSize = 5;
+	dialouge = new FlxText(overworldDialougeBox.x + 50, overworldDialougeBox.y + 50).setFormat(Paths.font("main.ttf"), 56, FlxColor.WHITE, "left");
 	dialouge.cameras = [camUI];
 	add(dialouge);
 	
@@ -57,82 +55,108 @@ function create(){
 
 function update(){
 	dialouge.fieldWidth = overworldDialougeBox.width - (100 - dialouge.offset.x);
-	#if mobile
-		if (touchPad.buttonC.justPressed) FlxG.resetState();
-	#end
-	characters[0].overworldUpdate(null, controls);
+	if (keys.MENU) FlxG.resetState();
+	for (i=>character in characters) {
+		var follow = (i - 1) < 0 ? null : characters[i - 1];
+		for (name=>layer in layers) {
+			if(name == "walls") FlxG.collide(character, layer);
+		}
+		character.overworldUpdate(follow, keys);
+		character.x = FlxMath.bound(character.x, worldBounds[0], worldBounds[2]);
+		character.y = FlxMath.bound(character.y, worldBounds[1], worldBounds[3]);
+	}
+	members.sort((obj1, obj2) -> {
+	    if ((obj1.y + obj1.height/2) < (obj2.y + obj2.height/2))
+	        return -1;
+	    else if ((obj1.y + obj1.height/2) > (obj2.y + obj2.height/2))
+	        return 1;
+	    else
+	        return 0;
+	}, -1);
 	FlxG.camera.follow(characters[0]);
-	//FlxG.collide(player, walls);
 }
 
-/*var tilemap = new TiledMap(Paths.file('data/test.tmx'));
-var decos = cast tilemap.getLayer('decos');
-var tileLayer:TiledTileLayer = cast tilemap.getLayer("tile");
-var tileLayer1:TiledTileLayer = cast tilemap.getLayer("walls");
-var walls:FlxTypedGroup;
-var decorations:FlxTypedGroup;
+function loadRoom(roomName){
+	var scale = 2;
+	var roomXmlString = Assets.getText(Paths.xml("rooms/" + roomName));
+    var roomXml = Xml.parse(roomXmlString);
+    var mapElement = roomXml.firstElement();
+    var mapWidth = Std.parseInt(mapElement.get("width"));
+    var mapHeight = Std.parseInt(mapElement.get("height"));
+    var tileWidth = Std.parseInt(mapElement.get("tilewidth"))*scale;
+    var tileHeight = Std.parseInt(mapElement.get("tileheight"))*scale;
+	worldBounds = [0,0,(mapWidth-1)*tileWidth,(mapHeight-1)*tileHeight];
+	camera.minScrollY = 0;
+	camera.maxScrollX = mapWidth*tileWidth;
+	camera.minScrollX = 0;
+	camera.maxScrollY = mapHeight*tileHeight;
+	for (element in mapElement.elements()) {
+        switch (element.nodeName) {
+            case "tileset":
+                var firstgid = element.get("firstgid");
+				var source = element.get("source");
+				var tilesetXmlString = Assets.getText(Paths.xml("tilesets/" + source));
+				var tilesetXml = Xml.parse(tilesetXmlString);
+				var tilesetElement = tilesetXml.firstElement();
+				image = tilesetElement.firstElement();
+				if (image.nodeName == "image") {
+					var source = image.get("source");
+					tileset = new FlxSprite().loadGraphic(Paths.image(source),true,tilesetElement.get("tilewidth"),tilesetElement.get("tileheight"));
+					add(tileset);
+					tilesets[firstgid] = tileset;
+				}
+            case "group":
+                var layerName = element.get("name");
+				var layerGroup:FlxTypedGroup<FlxSprite> = new FlxTypedGroup();
+		        for (sprite in element.elements()) if (sprite.nodeName == "imagelayer") {
+					var x = Std.parseFloat(sprite.get("offsetx"));
+		      	  var y = Std.parseFloat(sprite.get("offsety"));
+					image = sprite.firstElement();
+		            if (image.nodeName == "image") {
+		                var source = image.get("source");
+						var width = Std.parseFloat(image.get("width"));
+		      		  var height = Std.parseFloat(image.get("height"));
+	         		   sprite = new FlxSprite(x*scale,y*scale).loadGraphic(Paths.image(source));
+			        	layerGroup.add(sprite);
+						sprite.setGraphicSize(width*scale, height*scale);
+						sprite.updateHitbox();
+		            }
+		        }
+				add(layerGroup);
+				if (layerGroup.length > 0) layers[layerName] = layerGroup;
+            case "layer":
+	            var tilesetID = element.exists("tilesetgid") ? element.get("tilesetgid") : "1";
+				var layerName = element.get("name");
+				var layerGroup:FlxTypedGroup<FlxSprite> = new FlxTypedGroup();
+                var tileArray = parseData(element.get("data"));
+                for(y=>row in tileArray) for(x=>til in row) if(til > 0){
+					tile = new FlxSprite(tileWidth*x,tileHeight*y).loadGraphicFromSprite(tilesets[tilesetID]);
+		        	tile.animation.add("idle",[til-1],1,true);
+					//tile.visible = layerName != "walls";
+		        	layerGroup.add(tile);
+					tile.immovable = true;
+		        	tile.animation.play("idle");
+					tile.setGraphicSize(tileWidth, tileHeight);
+					tile.updateHitbox();
+				}
+				add(layerGroup);
+				if (layerGroup.length > 0) layers[layerName] = layerGroup;
+        }
+    }
+    if (Assets.exists("data/rooms/" + roomName + ".hx")) importScript("data/rooms/" + roomName);
+}
 
-FlxG.worldBounds.set(0,0, tilemap.width*tilemap.tileWidth, tilemap.height*tilemap.tileHeight); 	// This line is very important bc it makes the world collisions' limit higher so it can still detect collisions with huge maps
+function parseData(str)
+{
+    //var cleanData = StringTools.trim(csvData);
+    var rows = str.split("|");
+    var result = [];
+    for (i=>row in rows) {
+        var tiles = row.split(",");
+        var parsedRow = [];
+        for (til in tiles) parsedRow.push(Std.parseInt(til));
+        result.push(parsedRow);
+    }
+    return result;
+}
 
-camera.minScrollY = 0;
-camera.maxScrollX = tilemap.width*tilemap.tileWidth;
-camera.minScrollX = 0;
-camera.maxScrollY = tilemap.height*tilemap.tileHeight;
-function loadMap(){
-	walls = new FlxTypedGroup<FlxSprite>();
-
-	var counterh:Int = 0;
-	var counterw:Int = 0;
-
-	for(i=>til in tileLayer.tileArray){
-		//trace(counter);
-		if (i % tileLayer.width == 0 && i != 0){ 
-			counterw = 0;
-			counterh++;
-		}
-		counterw++;
-
-		if(til > 0){
-			tile = new FlxSprite(40*counterw,40*counterh).loadGraphicFromSprite(tileset);
-        	tile.animation.add("idle",[til-1],1,true);
-        	add(tile);
-        	tile.animation.play("idle");
-		}
-		
-	}
-
-	var counterh:Int = 0;
-	var counterw:Int = 0;
-
-	for(i=>til in tileLayer1.tileArray){
-		//trace(counter);
-		if (i % tileLayer.width == 0 && i != 0){ 
-			counterw = 0;
-			counterh++;
-		}
-		counterw++;
-
-		if(til > 0){
-			tile = new FlxSprite(40*counterw,40*counterh).loadGraphicFromSprite(tileset);
-        	tile.animation.add("idle",[til-1],1,true);
-        	walls.add(tile);
-        	tile.animation.play("idle");
-			tile.immovable = true;
-		}
-		
-	}
-	add(walls);
-
-	player = new Player(500, 500);
-	add(player);
-
-	for(layer in decos.layers){
-		spr = new FlxSprite(layer.offsetX+40, layer.offsetY).loadGraphic(Paths.image(layer.imagePath.replace('../images/', '').replace('.png', '')));
-		add(spr);
-	}
-}*/
-
-#if mobile
-addTouchPad('LEFT_FULL', 'A_B_C');
-addTouchPadCamera(false);
-#end
