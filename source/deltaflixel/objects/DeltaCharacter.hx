@@ -20,7 +20,7 @@ class DeltaCharacter extends FunkinSprite
 	public var shake = 0;
 	
 	var movementHistory = [];
-	public inline var baseSpeed:Float = 200;
+	public inline var baseSpeed:Float = 300;
 	public var followTimer:Float = 0;
 	public var facing = "down";
 	public var isMoving:Bool;
@@ -60,8 +60,13 @@ class DeltaCharacter extends FunkinSprite
 			else
 				addOffset(anim.name, 0,0);
 		}
+		
 		playAnim('idle');
+
 		updateHitbox();
+		setSize(30,20);
+		////centerOffsets();
+		offset.set(-30, 65);
 	}
 	public function overworldUpdate(parent, ?keys){
 		overworldX = x;

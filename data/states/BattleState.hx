@@ -249,6 +249,9 @@ public function changeSel(number:Int = 0){
 	playSound("menu/scroll", true);
 }
 function update() {
+	var ACCEPT = keys.ACCEPT || controls.ACCEPT;
+	var BACK = keys.BACK || controls.BACK;
+
 	dialouge.fieldWidth = FlxG.width - (45 - dialouge.offset.x);
 	if (keys.MENU) FlxG.resetState();
 	if (state != "enemyAttack")
@@ -312,14 +315,14 @@ function update() {
 			}
 		}
 		dialouge.visible = true;
-		if (keys.BACK) {
+		if (BACK) {
 			if (turn > 0) {
 				playSound("menu/cancel", true);
 				prevTurn();
 			}
 		}
 		characters[turn].playAnim("idle", false);
-		if (keys.ACCEPT) {
+		if (ACCEPT) {
 			if (characters[turn].hp < 0) {
 				nextTurn();
 				return;
@@ -409,7 +412,7 @@ function update() {
 		} else {
 			textOptSpare.visible = textOptSpareText.visible = false;
 		}
-		if (keys.BACK) {
+		if (BACK) {
 			playSound("menu/cancel", true);
 			switch(textOptionCase) {
 				default:
@@ -447,7 +450,7 @@ function update() {
 					}
 			}
 		}
-		if (keys.ACCEPT) {
+		if (ACCEPT) {
 			playSound("menu/confirm", true);
 			switch(textOptionCase) {
 				case "fight":
@@ -580,7 +583,7 @@ function update() {
 		}
 	}
 	if (deadChars == characters.length) FlxG.resetState();
-	for (box in fightBoxes) box.update(keys.ACCEPT);
+	for (box in fightBoxes) box.update(ACCEPT);
 	if (enemies.length <= 0 && state != "win") {
 		eventName = "youWon";
 		events[eventName] = [

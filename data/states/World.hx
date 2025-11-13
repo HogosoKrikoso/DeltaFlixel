@@ -16,7 +16,7 @@ using StringTools;
 
 importScript("data/scripts/eventSystem");
 
-public var characters:Array = [];
+public var characters:Map = [];
 
 public var camUI = new FlxCamera(0, 0, FlxG.width, FlxG.height);
 for (u in [camUI]) {
@@ -25,14 +25,16 @@ for (u in [camUI]) {
 }
 
 public var tilesets = [];
-public var layers = [];
+public var layers = ["w" => "a"];
 public var worldBounds = [0,0,0,0];
 
 function create(){
-	loadRoom("test1");
+	loadRoom("test2");
 	
 	importScript("data/chars/kris");
 	importScript("data/chars/ralsei");
+
+	
 	for (character in characters) add(character);
 	
 	overworldDialougeBox = new FlxSprite(0, 0).loadGraphic(Paths.image("ui/dialouge/textBox"));
@@ -59,16 +61,17 @@ function update(){
 	for (i=>character in characters) {
 		var follow = (i - 1) < 0 ? null : characters[i - 1];
 		for (name=>layer in layers) {
-			if(name == "walls") FlxG.collide(character, layer);
+			if(name == "walls") FlxG.collide(characters, layer);
 		}
+		
 		character.overworldUpdate(follow, keys);
 		character.x = FlxMath.bound(character.x, worldBounds[0], worldBounds[2]);
 		character.y = FlxMath.bound(character.y, worldBounds[1], worldBounds[3]);
 	}
 	members.sort((obj1, obj2) -> {
-	    if ((obj1.y + obj1.height/2) < (obj2.y + obj2.height/2))
+	    if ((obj1.y) < (obj2.y))
 	        return -1;
-	    else if ((obj1.y + obj1.height/2) > (obj2.y + obj2.height/2))
+	    else if ((obj1.y) > (obj2.y))
 	        return 1;
 	    else
 	        return 0;
@@ -86,6 +89,7 @@ function loadRoom(roomName){
     var tileWidth = Std.parseInt(mapElement.get("tilewidth"))*scale;
     var tileHeight = Std.parseInt(mapElement.get("tileheight"))*scale;
 	worldBounds = [0,0,(mapWidth-1)*tileWidth,(mapHeight-1)*tileHeight];
+	//FlxG.worldBounds.set(0,0,(mapWidth-1)*tileWidth, (mapHeight-1)*tileHeight);
 
 	camera.minScrollY = 0;
 	camera.maxScrollX = mapWidth*tileWidth;
@@ -102,7 +106,7 @@ function loadRoom(roomName){
 				image = tilesetElement.firstElement();
 				if (image.nodeName == "image") {
 					var source = image.get("source");
-					tileset = new FlxSprite().loadGraphic(Paths.image(source),true,tilesetElement.get("tilewidth"),tilesetElement.get("tileheight"));
+					tileset = new FlxSprite().loadGraphic(Paths.image(source.replace('../../images/', '').replace('.png', '')),true,tilesetElement.get("tilewidth"),tilesetElement.get("tileheight"));
 					add(tileset);
 					tilesets[firstgid] = tileset;
 				}
@@ -118,7 +122,7 @@ function loadRoom(roomName){
 		                var source = image.get("source");
 						var width = Std.parseFloat(image.get("width"));
 		      		    var height = Std.parseFloat(image.get("height"));
-	         		    sprite = new FlxSprite(x*scale,y*scale).loadGraphic(Paths.image(source.replace('../images/', '').replace('.png', '')));
+	         		    sprite = new FlxSprite(x*scale,y*scale).loadGraphic(Paths.image(source.replace('../../images/', '').replace('.png', '')));
 			        	layerGroup.add(sprite);
 						sprite.setGraphicSize(width*scale, height*scale);
 						sprite.updateHitbox();
@@ -143,7 +147,7 @@ function loadRoom(roomName){
 					tile.updateHitbox();
 				}
 				add(layerGroup);
-				if (layerGroup.length > 0) layers[layerName] = layerGroup;
+				if (layerGroup.length > 0) layers.set(layerName, layerGroup);
         }
     }
     if (Assets.exists("data/rooms/" + roomName + ".hx")) importScript("data/rooms/" + roomName);
@@ -180,3 +184,14 @@ function parseRawToArray(str:Array, width:Float)
     return result;
 }
 
+/**
+ * TODO:
+ * [] Define change room system
+ * [] Compatibility with multiple tilesets
+ * [X] Improve Z index of sprites 
+ * [] Animated sprites support
+ * [] UI & menu
+ * [] Health
+ * [] Save data system
+ * [] Fix Ralsei's hitbox
+ */
