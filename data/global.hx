@@ -143,7 +143,7 @@ function setGameResolution(realWidth:Int, realHeight:Int, ?keepQuality:Bool = fa
 	var scale:Float = keepQuality ? Math.max(realWidth/1280, realHeight/720) : 1;
 	var width:Int = Math.floor(realWidth/scale);
 	var height:Int = Math.floor(realHeight/scale);
-    //FlxG.resizeWindow(width, height);		// Esto es muy molesto en mi pc xd
+    FlxG.resizeWindow(width, height);
     FlxG.resizeGame(width, height);
     FlxG.scaleMode.width = FlxG.width = FlxG.initialWidth = width;
     FlxG.scaleMode.height = FlxG.height = FlxG.initialHeight = height;
