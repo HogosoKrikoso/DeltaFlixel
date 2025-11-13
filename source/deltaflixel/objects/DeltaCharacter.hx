@@ -20,12 +20,13 @@ class DeltaCharacter extends FunkinSprite
 	public var shake = 0;
 	
 	var movementHistory = [];
-	public inline var baseSpeed:Float = 300;
-	public var followTimer:Float = 0;
+	public var speed:Float = 200;
 	public var facing = "down";
 	public var isMoving:Bool;
 	public var canMove:Bool = true;
 	public var action:String = "idle";
+	public var hsp:Float = 0;
+	public var vsp:Float = 0;
 	
 	var overworldX:Float;
 	var overworldY:Float;
@@ -60,20 +61,15 @@ class DeltaCharacter extends FunkinSprite
 			else
 				addOffset(anim.name, 0,0);
 		}
-		
 		playAnim('idle');
-
 		updateHitbox();
-		setSize(30,20);
-		////centerOffsets();
-		offset.set(-30, 65);
 	}
-	public function overworldUpdate(parent, ?keys){
+	public function overworldUpdate(parent){
 		overworldX = x;
 		overworldY = y;
 		
 		if (parent == null) {
-			speed = baseSpeed;
+			var temp_speed = speed;
 			
 			var up = keys.UP;
 			var down = keys.DOWN;
@@ -81,60 +77,44 @@ class DeltaCharacter extends FunkinSprite
 			var right = keys.RIGHT;
 	
 			if (keys.BACK_HOLD && action == "walk"){ 
-				speed += 100;
+				temp_speed += 100;
 				animation.timeScale = 1.5;
 			}
 			else animation.timeScale = 1.0;
 			if (up || down || left || right) {
-	
 				if (up && down)
 					up = down = false;
 				if (left && right)
 					left = right = false;
-		
-				if(canMove && (up || down || left || right)){
-					var newAngle:Float = 0;
-					if (up){
-						newAngle = -90;
-						if (left)
-							newAngle -= 45;
-						else if (right)
-							newAngle += 45;
-						facing = 'up';
-					}
-					else if (down){
-						newAngle = 90;
-						if (left)
-							newAngle += 45;
-						else if (right)
-							newAngle -= 45;
-						facing = 'down';
-					}
-					else if (left){
-						newAngle = 180;
-						facing = 'left';
-					}
-		
-					else if (right){
-						newAngle = 0;
-						facing = 'right';
-					}
-					
-					velocity.setPolarDegrees(speed, newAngle);
-				}
-			} else {
-				velocity.set(0,0);
 			}
-			#if mobile
-			x += velocity.x / getFPS();
-			y += velocity.y / getFPS();
-			#else
-			x += velocity.x / getFPS();
-			y += velocity.y / getFPS();
-			#end
-			action = "idle";
-			if ((velocity.x != 0 || velocity.y != 0)) action = "walk";
-			isMoving = velocity.x == 0 && velocity.x == 0 ? false : true;
+			if(canMove && (up || down || left || right)){
+				var temp_hsp:Float = 0;
+				var temp_vsp:Float = 0;
+				if (up){
+					temp_vsp = -temp_speed;
+					facing = 'up';
+					if (left) temp_hsp = -temp_speed;
+					else if (right) temp_hsp = temp_speed;	
+				} else if (down){
+					temp_vsp = temp_speed;
+					facing = 'down';
+					if (left) temp_hsp = -temp_speed;
+					else if (right) temp_hsp = temp_speed;	
+				} else if (left){
+					temp_hsp = -temp_speed;
+					facing = 'left';
+				} else if (right){
+					temp_hsp = temp_speed;	
+					facing = 'right';
+				}
+				hsp = temp_hsp;
+				vsp = temp_vsp;
+			}
+			x += hsp / getFPS();
+			y += vsp / getFPS();
+			action = (hsp != 0 || vsp != 0) ? "walk" : "idle";
+			isMoving = (hsp != 0 || vsp != 0);
+			hsp = vsp = 0;
 		} else {
 			if (parent.movementHistory.length > 30) {
 				isMoving = true;
