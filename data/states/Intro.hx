@@ -38,7 +38,7 @@ function update(e:Float) {
 		noise.pitch = FlxG.random.float(0.95,1.05);
 	}
 	if (canPress) {
-		if (keys.ACCEPT) {
+		if (keys.ACCEPT || controls.ACCEPT) {
 			canPress = false;
 			FlxTween.tween(FlxG.camera, {alpha: 0}, 0.5, { ease: FlxEase.quadOut });
 			new FlxTimer().start(0.5, function(tmr){

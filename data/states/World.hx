@@ -54,6 +54,7 @@ function create(){
 }
 
 function update(){
+	trace(FlxG.rawElapsed*1000);
 	dialouge.fieldWidth = overworldDialougeBox.width - (100 - dialouge.offset.x);
 	if (keys.MENU) FlxG.resetState();
 	for (i=>character in characters) {
@@ -86,6 +87,7 @@ function loadRoom(roomName){
     var tileWidth = Std.parseInt(mapElement.get("tilewidth"))*scale;
     var tileHeight = Std.parseInt(mapElement.get("tileheight"))*scale;
 	worldBounds = [0,0,(mapWidth-1)*tileWidth,(mapHeight-1)*tileHeight];
+
 	camera.minScrollY = 0;
 	camera.maxScrollX = mapWidth*tileWidth;
 	camera.minScrollX = 0;

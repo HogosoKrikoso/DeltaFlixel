@@ -61,7 +61,7 @@ function update(e:Float) {
 		if (keys.DOWN_P)
 			changeSelection(1);
 			
-		if (keys.ACCEPT) {
+		if (keys.ACCEPT || controls.ACCEPT) {
 			playSound("menu/confirm", true);
 			switch (stuff[curSelected]) {
 				case "Battle":
@@ -72,10 +72,10 @@ function update(e:Float) {
 					canPress = false;
 					FlxG.sound.music.stop();
 					FlxG.switchState(new ModState("World"));
-					#end
-					#if windows
-					FlxG.switchState(new ModState("Overworld"));
-					#end
+					
+					//#if windows
+					//FlxG.switchState(new ModState("Overworld"));
+					//#end
 				case "Options":
 					canPress = false;
 					FlxG.switchState(new ModState("Options"));

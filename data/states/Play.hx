@@ -73,7 +73,7 @@ function update(e:Float) {
 		if (keys.DOWN_P)
 			changeSelection(1);
 			
-		if (keys.ACCEPT) {
+		if (keys.ACCEPT || controls.ACCEPT) {
 			playSound("menu/confirm", true);
 			switch (stuff[curSelected]) {
 				case "Yes":
