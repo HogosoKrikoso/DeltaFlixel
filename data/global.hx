@@ -9,6 +9,10 @@ var redirectStates:Map<FlxState, String> = [
 	TitleState => "Play",
 ];
 
+public static var openedGame = true;
+public static var fromRoom:Int;
+public static var toRoom:Int;
+
 function new() {
 	setGameResolution(640, 480, true);
 }

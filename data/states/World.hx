@@ -1,8 +1,7 @@
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxDirectionFlags;
 import flixel.text.FlxTextBorderStyle;
-/*import flixel.addons.editors.tiled.TiledMap;
-import flixel.addons.editors.tiled.TiledObjectLayer;*/
+
 import flixel.tile.FlxBaseTilemap.FlxTilemapAutoTiling;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.addons.util.FlxSimplex;
@@ -11,6 +10,11 @@ import funkin.menus.ModSwitchMenu;
 import funkin.menus.credits.CreditsMain;
 import funkin.options.OptionsMenu;
 import flixel.util.FlxDirectionFlags;
+
+#if windows
+import flixel.addons.editors.tiled.TiledMap;
+import flixel.addons.editors.tiled.TiledObjectLayer;
+#end
 
 using StringTools;
 
@@ -53,7 +57,9 @@ function create(){
 
 function update(){
 	dialouge.fieldWidth = overworldDialougeBox.width - (100 - dialouge.offset.x);
-	if (touchPad.buttonC.justPressed) FlxG.resetState();
+	#if mobile
+		if (touchPad.buttonC.justPressed) FlxG.resetState();
+	#end
 	characters[0].overworldUpdate(null, controls);
 	FlxG.camera.follow(characters[0]);
 	//FlxG.collide(player, walls);

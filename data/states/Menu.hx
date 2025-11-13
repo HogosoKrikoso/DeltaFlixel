@@ -74,7 +74,12 @@ function update(e:Float) {
 					FlxG.switchState(new ModState("BattleState"));
 				case "World":
 					canPress = false;
+					#if android
 					FlxG.switchState(new ModState("World"));
+					#end
+					#if windows
+					FlxG.switchState(new ModState("Overworld"));
+					#end
 				case "Options":
 					canPress = false;
 					FlxG.switchState(new TreeMenu(() -> {}, true, "hola"));
