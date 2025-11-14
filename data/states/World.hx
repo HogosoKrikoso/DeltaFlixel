@@ -38,7 +38,7 @@ function create(){
 	
 	for (character in characters) {
 		character.x = spawnPoints["main"].x
-		character.x = spawnPoints["main"].y
+		character.y = spawnPoints["main"].y
 		add(character);
 	}
 	
