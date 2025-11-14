@@ -17,3 +17,4 @@ A Deltarune Engine made purely in Codename Engine.
 ## Support the people behind this!
 - [YoyleGateto/Me](https://github.com/HogosoKrikoso/): Creator, Main Coder
 - [Remagets](https://github.com/remagetsCode/): Overworld Coder
+- [Boboa](https://github.com/Bboaa): Wave System Coder (she might do it someday be patient)
