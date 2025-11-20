@@ -98,12 +98,12 @@ function create() {
 	tpLabel = new FlxSprite().loadGraphic(Paths.image("ui/battle/tp"));
 	tpLabel.scale.set(2,2);
 	tpLabel.updateHitbox();
-	tpLabel.setPosition(35, 200);
+	tpLabel.setPosition(50, 150);
 	tpLabel.cameras = [camUI];
 	add(tpLabel);
 	
-	tpText = new FlxText(32, 300);
-	tpText.setFormat(Paths.font("main.ttf"), 56, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+	tpText = new FlxText(55, tpLabel.y + 90);
+	tpText.setFormat(Paths.font("main.ttf"), 56, FlxColor.WHITE, 0, FlxTextBorderStyle.OUTLINE, 0xFF000000);
 	tpText.borderSize = 3;
 	tpText.borderQuality = 1;
 	tpText.fieldWidth = tpBar.x;
@@ -249,9 +249,6 @@ public function changeSel(number:Int = 0){
 	playSound("menu/scroll", true);
 }
 function update() {
-	var ACCEPT = keys.ACCEPT || controls.ACCEPT;
-	var BACK = keys.BACK || controls.BACK;
-
 	dialouge.fieldWidth = FlxG.width - (45 - dialouge.offset.x);
 	if (keys.MENU) FlxG.resetState();
 	if (state != "enemyAttack")
@@ -315,14 +312,14 @@ function update() {
 			}
 		}
 		dialouge.visible = true;
-		if (BACK) {
+		if (keys.BACK) {
 			if (turn > 0) {
 				playSound("menu/cancel", true);
 				prevTurn();
 			}
 		}
 		characters[turn].playAnim("idle", false);
-		if (ACCEPT) {
+		if (keys.ACCEPT) {
 			if (characters[turn].hp < 0) {
 				nextTurn();
 				return;
@@ -412,7 +409,7 @@ function update() {
 		} else {
 			textOptSpare.visible = textOptSpareText.visible = false;
 		}
-		if (BACK) {
+		if (keys.BACK) {
 			playSound("menu/cancel", true);
 			switch(textOptionCase) {
 				default:
@@ -450,7 +447,7 @@ function update() {
 					}
 			}
 		}
-		if (ACCEPT) {
+		if (keys.ACCEPT) {
 			playSound("menu/confirm", true);
 			switch(textOptionCase) {
 				case "fight":
@@ -583,7 +580,7 @@ function update() {
 		}
 	}
 	if (deadChars == characters.length) FlxG.resetState();
-	for (box in fightBoxes) box.update(ACCEPT);
+	for (box in fightBoxes) box.update(keys.ACCEPT);
 	if (enemies.length <= 0 && state != "win") {
 		eventName = "youWon";
 		events[eventName] = [
