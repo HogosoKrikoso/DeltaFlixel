@@ -1,14 +1,4 @@
-import flixel.tile.FlxTileroom;
-import flixel.util.FlxDirectionFlags;
 import flixel.text.FlxTextBorderStyle;
-import flixel.tile.FlxBaseTileroom.FlxTileroomAutoTiling;
-import flixel.graphics.frames.FlxTileFrames;
-import flixel.addons.util.FlxSimplex;
-import funkin.editors.EditorPicker;
-import funkin.menus.ModSwitchMenu;
-import funkin.menus.credits.CreditsMain;
-import funkin.options.OptionsMenu;
-import flixel.util.FlxDirectionFlags;
 import Xml;
 import flixel.util.FlxSort;
 
@@ -24,11 +14,17 @@ for (u in [camUI]) {
 	FlxG.cameras.add(u, false);
 }
 
-public var tilesets = [];
-public var tilemaps = [];
-public var sprites = [];
-public var spawnPoints = [];
+public var tilesets = ["q" => ""];
+public var tilemaps = ["u" => ""];
+public var tilemapCollisions = ["e" => false];
+public var sprites = ["s" => ""];
+public var spawnPoints = ["o" => ""];
 public var worldBounds = [0,0,0,0];
+public var roomTitle = "";
+public var roomWidth = 0;
+public var roomHeight = 0;
+public var tileWidth = 0;
+public var tileHeight = 0;
 
 function create(){
 	loadRoom("test");
@@ -36,9 +32,10 @@ function create(){
 	importScript("data/chars/kris");
 	importScript("data/chars/ralsei");
 	
-	for (character in characters) {
-		character.x = spawnPoints["main"].x
-		character.y = spawnPoints["main"].y
+	for (i=>character in characters) {
+		character.x = spawnPoints["main"].x;
+		character.y = spawnPoints["main"].y-(i*0.001);
+		character.facing = spawnPoints["main"].facing;
 		add(character);
 	}
 	
@@ -70,93 +67,111 @@ function update(){
 		character.y = FlxMath.bound(character.y, worldBounds[1], worldBounds[3]);
 	}
 	for (name=>tilemap in tilemaps) {
-		if(name == "walls") FlxG.collide(characters, tilemap);
+		if(tilemapCollisions.exists(name) && tilemapCollisions.get(name) == true) FlxG.collide(characters[0], tilemap);
+	}
+	for (spr in sprites) {
+		if(spr.collideMode == "push") FlxG.collide(spr, characters[0]);
+		if(spr.collideMode == "solid") FlxG.collide(characters[0], spr);
 	}
 	members.sort((obj1, obj2) -> {
-	    if ((obj1.y) < (obj2.y))
-	        return -1;
-	    else if ((obj1.y) > (obj2.y))
-	        return 1;
-	    else
-	        return 0;
+		if ((obj1.y) < (obj2.y))
+			return -1;
+		else if ((obj1.y) > (obj2.y))
+			return 1;
+		else
+			return 0;
 	}, -1);
 	if(characters[0] != null) FlxG.camera.follow(characters[0]);
 }
 
 function loadRoom(roomName){
 	var roomXmlString = Assets.getText(Paths.xml("rooms/" + roomName));
-    var roomXml = Xml.parse(roomXmlString);
-    var roomElement = roomXml.firstElement();
-    var roomWidth = Std.parseInt(roomElement.get("width"));
-    var roomHeight = Std.parseInt(roomElement.get("height"));
-    var tileWidth = Std.parseInt(roomElement.get("tilewidth"))*2;
-    var tileHeight = Std.parseInt(roomElement.get("tileheight"))*2;
-	worldBounds = [0,0,(roomWidth-1)*tileWidth,(roomHeight-1)*tileHeight];
+	var roomXml = Xml.parse(roomXmlString);
+	var roomElement = roomXml.firstElement();
+	roomWidth = Std.parseInt(roomElement.get("width"));
+	roomHeight = Std.parseInt(roomElement.get("height"));
+	tileWidth = Std.parseInt(roomElement.get("tilewidth"))*2;
+	tileHeight = Std.parseInt(roomElement.get("tileheight"))*2;
+	roomTitle = roomElement.get("title");
+	worldBounds = [-tileWidth/2,-tileHeight/2,(roomWidth-0.5)*tileWidth,(roomHeight-0.5)*tileHeight];
 	camera.minScrollY = 0;
 	camera.maxScrollX = roomWidth*tileWidth;
 	camera.minScrollX = 0;
 	camera.maxScrollY = roomHeight*tileHeight;
 	for (element in roomElement.elements()) {
-        switch (element.elementName) {
-        	case "tileset":
-        		var name = element.get("name");
+		switch (element.nodeName) {
+			case "tileset":
+				var name = element.get("name");
 				var path = element.get("path");
 				tileset = new FlxSprite().loadGraphic(Paths.image(path),true,element.get("tilewidth"),element.get("tileheight"));
-				tilesets[name] = tileset;
-            case "sprite":
-	            var name = element.get("name");
-                var sprite = createSpriteFromXMLElement(element);
-                add(sprite);
-                sprites[name] = sprite;
-            case "spawn":
-	            var name = element.get("name");
-                var pos = {
-                	x: element.get("x"),
-              	  y: element.get("y")
-                };
-                spawnPoints[name] = pos;
-            case "tilemap":
-	            var tileset = element.exists("tileset") ? tilesets[element.get("tileset")] : 0;
+				tilesets.set(name, tileset);
+			case "sprite":
+				var name = element.get("name");
+				var sprite = createSpriteFromXMLElement(element);
+				add(sprite);
+				sprites.set(name, sprite);
+			case "spawn":
+				var name = element.get("name");
+				var pos = {
+					x: Std.parseFloat(element.get("x"))*2,
+					y: Std.parseFloat(element.get("y"))*2,
+					facing: element.get("facing"),
+				};
+				spawnPoints.set(name, pos);
+			case "tilemap":
+				var tileset = element.exists("tileset") ? tilesets.get(element.get("tileset")) : 0;
 				var name = element.get("name");
 				var group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup();
-                var tileArray = parseTilemapData(element.get("data"), roomWidth);
-                for(y=>row in tileArray) for(x=>til in row) if(til > 0){
+				var tileArray = parseTilemapData(element.get("data"), roomWidth);
+				for(y=>row in tileArray) for(x=>til in row) if(til > 0){
 					tile = new FlxSprite(tileWidth*x,tileHeight*y);
-					if (tileset != 0) tile.loadGraphicFromSprite(tileset);
-		        	tile.animation.add("idle",[til-1],1,true);
-					tile.alpha = name != "walls" ? 1 : 0.001;
-		        	group.add(tile);
+					if (tileset != 0) {
+						tile.loadGraphicFromSprite(tileset);			
+						tile.animation.add("idle",[til-1],1,true);
+						tile.animation.play("idle");
+					}
+					if (element.exists("visible")) tile.visible = element.get("visible") == "true";
+					if (element.exists("alpha")) tile.alpha = Std.parseFloat(element.get("alpha"));
+					if (element.exists("color")) tile.color = FlxColor.fromString(element.get("color"));
 					tile.immovable = true;
-		        	tile.animation.play("idle");
 					tile.setGraphicSize(tileWidth, tileHeight);
 					tile.updateHitbox();
+					tile.width = tileWidth;
+					tile.height = tileHeight;
+					group.add(tile);
 				}
 				add(group);
-				if (group.length > 0) tilemaps[name] = group;
-        }
-    }
-    if (Assets.exists("data/rooms/" + roomName + ".hx")) importScript("data/rooms/" + roomName);
+				if (group.length > 0) {
+					tilemaps.set(name, group);
+					if (element.get("collide") == "true") tilemapCollisions.set(name, true);
+				}
+		}
+	}
+	if (Assets.exists("data/rooms/" + roomName + ".hx")) importScript("data/rooms/" + roomName);
 }
 
 function parseTilemapData(str, width)
 {
-    var tiles = str.split(",");
-    var row = [];
-    var result = [];
-    for (tile in tiles) {
-        row.push(Std.parseInt(tile));
-        if (row.length >= width) {
-    		result.push(row);
+	var tiles = str.split(",");
+	var row = [];
+	var result = [];
+	for (tile in tiles) {
+		row.push(Std.parseInt(tile));
+		if (row.length >= width) {
+			result.push(row);
 			row = [];
 		}
-    }
-    return result;
+	}
+	return result;
 }
 
 function createSpriteFromXMLElement(element) {
-	var spr = new FunkinSprite();
-	spr.name = element.get("name");
-	spr.frames = Paths.getFrames(element.get("path"));
+	var spr = new OverworldSprite();
+	spr.immovable = false;
+	spr.scale.set(2,2);
+	spr.updateHitbox();
+	if (element.exists("path")) spr.frames = Paths.getFrames(element.get("path"));
+	if (element.exists("collideMode")) spr.collideMode = element.get("collideMode");
 	if (element.exists("x")) spr.x = Std.parseFloat(element.get("x"))*2;
 	if (element.exists("y")) spr.y = Std.parseFloat(element.get("y"))*2;
 	if (element.exists("scroll")) spr.scrollFactor.set(Std.parseFloat(element.get("scroll")), Std.parseFloat(element.get("scroll")));
@@ -178,21 +193,32 @@ function createSpriteFromXMLElement(element) {
 	if (element.exists("flipY")) spr.flipY = element.get("flipY") == "true";
 	if (element.exists("updateHitbox") && element.get("updateHitbox") == "true") spr.updateHitbox();
 	if (element.exists("zoomfactor")) spr.zoomFactor = Std.parseFloat(element.get("zoomfactor"));
+	if (element.exists("visible")) spr.visible = element.get("visible") == "true";
 	if (element.exists("alpha")) spr.alpha = Std.parseFloat(element.get("alpha"));
 	if (element.exists("color")) spr.color = FlxColor.fromString(element.get("color"));
 	if (element.exists("angle")) spr.angle = Std.parseFloat(element.get("angle"));
-	
+	for (anim in element.elements()) if (anim.nodeName == "anim") {
+		var indices = [];
+		if (anim.exists("indices")) for (ind in anim.get("indices").split(",")) indices.push(Std.parseInt(ind));
+		spr.addAnim(anim.get("name"), anim.get("anim"), Std.parseInt(anim.get("fps")), anim.get("loop") == "true", false, indices);
+		spr.addOffset(anim.get("name"), anim.exists("x") ? -Std.parseFloat(anim.get("x")) : 0, anim.exists("y") ? -Std.parseFloat(anim.get("y")) : 0);
+		spr.playAnim("idle");
+	}
 	return spr;
 }
 
 /**
  * TODO:
  * [] Change Room System
- * [X] Compatibility with multiple tilesets
- * [X] Improve Z index of sprites 
- * [] Animated sprites support
+ * [+] Compatibility with multiple tilesets
+ * [+] Improve Z index of sprites 
+ * [+] Animated sprites support
  * [] UI & menu
  * [] Health
  * [] Save data system
  * [] Fix Party's Hitbox
  */
+
+class OverworldSprite extends FunkinSprite {
+	public var collideMode:String = "none";
+}
