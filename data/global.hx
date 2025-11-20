@@ -93,7 +93,7 @@ function update() {
 	if (FlxG.keys.justPressed.F2) buttonVisible = !buttonVisible;
 	if (FlxG.keys.justPressed.F3) FlxG.resetState();
 	if (FlxG.keys.justPressed.F4) ModsFolder.switchMod(ModsFolder.currentModFolder);
-	if (FlxG.state.persistentUpdate) for (btn in [acceptButton, backButton, menuButton, joystick]) {
+	for (btn in [acceptButton, backButton, menuButton, joystick]) {
 		btn.update();
 		btn.alpha = DeltaFlixelOptions.data.buttonOpacity;
 		btn.color = switch (DeltaFlixelOptions.data.soul) {
