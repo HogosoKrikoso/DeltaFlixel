@@ -1,6 +1,7 @@
 # DeltaFlixel
-A Deltarune Engine made purely in Codename Engine.
 <img alt="banner" src="https://github.com/user-attachments/assets/324ab76f-c6ab-4176-bf1e-265d814282e8" />
+
+**A Deltarune Engine made purely in Codename Engine.**
 
 > [!NOTE]
 > Please keep in mind that, this engine is still in development.
