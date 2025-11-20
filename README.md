@@ -31,10 +31,11 @@ A Deltarune Engine made purely in Codename Engine.
 </details>
 
 <details>
-  <summary><h2>Bugs to Fix</h2></summary>
+  <summary><h2>Known Bugs</h2></summary>
  
-- Offset Not Working. (Visual)
-- Overworld Sprite Collision System Not Working.
+- [ ] Offset Not Working. (Visual)
+- [ ] Overworld Sprite Collision System Not Working.
+- [ ] Mobile Controls working when the State isn't active.
 
 > If theres more than those, please let me know.
 </details>
