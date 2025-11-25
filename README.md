@@ -16,7 +16,7 @@
 <img alt="Overworld Preview" src="https://github.com/user-attachments/assets/211d8580-1b39-4e6d-8e52-3a1ccf24d0a1" />
 
 ## Downloads
-![FUNNY DOWNLOAD BUTTON](https://img.shields.io/badge/-DEVELOPMENT%20VERSION-blue?style=for-the-badge&logo=github&labelColor=gray&link=https%3A%2F%2Fgithub.com%2FHogosoKrikoso%2FDeltaFlixel%2Farchive%2Frefs%2Fheads%2Fmain.zip)
+[![FUNNY DOWNLOAD BUTTON](https://img.shields.io/badge/-DEVELOPMENT%20VERSION-blue?style=for-the-badge&logo=github&labelColor=gray&)](https://github.com/HogosoKrikoso/DeltaFlixel/archive/refs/heads/main.zip)
 
 <details>
   <summary><h2>Progress Board</h2></summary>
