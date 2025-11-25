@@ -42,6 +42,30 @@
 </details>
 
 <details>
+  <summary><h2>Progress Board</h2></summary>
+ 
+ ### (80%) Battle Stuff:
+ - Party Characters (75%) [Extra Stats, Armor and Weapons hasn't been coded yet.]
+ - Enemies (75%) [Wave System hasn't been coded yet.]
+ - UI (90%) [Some UI elements are not accurate.]
+(Items System it's not in-game yet srry)
+
+ ### (49%) Overworld:
+ - Party Characters (50%) [We need to do the Soul Area System]
+ - UI (0%) [Menu and Health UI hasn't been coded yet.]
+ - Dialouge (99%) [Final Touches needed]
+ - Map (75%) [Bugs and some stuff not done.]
+</details>
+
+<details>
+  <summary><h2>Features Planned</h2></summary>
+ 
+- [ ] Editors
+- [ ] ALE Psych Port (maybe)
+
+</details>
+
+<details>
   <summary><h2>Support the people behind this!</h2></summary> 
  
 - [YoyleGateto/Me](https://github.com/HogosoKrikoso/): Creator, Main Coder
