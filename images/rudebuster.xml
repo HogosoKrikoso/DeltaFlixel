@@ -1,20 +1,23 @@
-<?xml version='1.0' encoding='utf-8'?>
-<TextureAtlas imagePath="rudebuster.png">
-<SubTexture name="anim0000" x="749" y="640" width="87" height="101" frameX="-311" frameY="-250" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0001" x="559" y="749" width="101" height="103" frameX="-311" frameY="-250" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0002" x="840" y="213" width="117" height="105" frameX="-311" frameY="-250" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0003" x="187" y="749" width="116" height="104" frameX="-327" frameY="-252" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0004" x="840" y="318" width="131" height="105" frameX="-327" frameY="-252" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0005" x="840" y="423" width="146" height="105" frameX="-327" frameY="-252" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0006" x="840" y="528" width="161" height="105" frameX="-327" frameY="-252" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0007" x="303" y="749" width="159" height="104" frameX="-344" frameY="-253" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0008" x="840" y="633" width="173" height="105" frameX="-344" frameY="-252" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0009" x="0" y="749" width="187" height="106" frameX="-344" frameY="-251" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0010" x="840" y="0" width="185" height="107" frameX="-360" frameY="-250" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0011" x="0" y="640" width="199" height="109" frameX="-360" frameY="-248" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0012" x="199" y="640" width="199" height="109" frameX="-360" frameY="-248" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0013" x="398" y="640" width="183" height="109" frameX="-376" frameY="-248" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0014" x="581" y="640" width="168" height="109" frameX="-391" frameY="-248" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0015" x="840" y="107" width="125" height="106" frameX="-434" frameY="-248" frameWidth="800" frameHeight="600" />
-<SubTexture name="anim0016" x="462" y="749" width="97" height="104" frameX="-462" frameY="-248" frameWidth="800" frameHeight="600" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Tex-Packer-EX v0.6.8 https://strawberrysage.github.io/tex-packer-ex
+-->
+<TextureAtlas imagePath="rudebuster.png" width="1854" height="69">
+  <SubTexture name="anim0000" x="0" y="0"  width="47" height="61" frameX="-311" frameY="-250" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0001" x="47" y="0"  width="61" height="63" frameX="-311" frameY="-250" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0002" x="360" y="0"  width="77" height="65" frameX="-311" frameY="-250" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0003" x="108" y="0"  width="76" height="64" frameX="-327" frameY="-252" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0004" x="437" y="0"  width="91" height="65" frameX="-327" frameY="-252" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0005" x="528" y="0"  width="106" height="65" frameX="-327" frameY="-252" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0006" x="634" y="0"  width="121" height="65" frameX="-327" frameY="-252" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0007" x="184" y="0"  width="119" height="64" frameX="-344" frameY="-253" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0008" x="755" y="0"  width="133" height="65" frameX="-344" frameY="-252" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0009" x="888" y="0"  width="147" height="66" frameX="-344" frameY="-251" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0010" x="1120" y="0"  width="145" height="67" frameX="-360" frameY="-250" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0011" x="1265" y="0"  width="159" height="69" frameX="-360" frameY="-248" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0012" x="1424" y="0"  width="159" height="69" frameX="-360" frameY="-248" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0013" x="1583" y="0"  width="143" height="69" frameX="-376" frameY="-248" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0014" x="1726" y="0"  width="128" height="69" frameX="-391" frameY="-248" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0015" x="1035" y="0"  width="85" height="66" frameX="-434" frameY="-248" frameWidth="800" frameHeight="600"/>
+  <SubTexture name="anim0016" x="303" y="0"  width="57" height="64" frameX="-462" frameY="-248" frameWidth="800" frameHeight="600"/>
 </TextureAtlas>
