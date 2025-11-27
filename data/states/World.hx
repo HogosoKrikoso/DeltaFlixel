@@ -27,10 +27,14 @@ public var roomHeight = 0;
 public var tileWidth = 0;
 public var tileHeight = 0;
 
-function overlap(a, b) {
-	for (pos in [[a.x, a.y], [a.x+(a.width-1), a.y], [a.x, a.y+(a.height-1)], [a.x+(a.width-1), a.y+(a.height-1)]]) {
-	}
+function objectsOverlap(a, b) {
+	var overlap = false;
+	for (pos in [[a.x, a.y], [a.x+(a.width-1), a.y], [a.x, a.y+(a.height-1)], [a.x+(a.width-1), a.y+(a.height-1)]]) if (pos[0] > b.x && pos[0] < (b.x + b.width) && pos[1] > b.y && pos[1] < (b.y + b.height)) 
+		overlap = true;
+	return overlap;
 }
+
+function makeObjectsCollide(a, b) if (objectsOverlap(a, b)) FlxObject.separate(a, b);
 
 function create(){
 	loadRoom("test");
@@ -42,6 +46,7 @@ function create(){
 		character.x = spawnPoints["main"].x;
 		character.y = spawnPoints["main"].y-(i*0.001);
 		character.facing = spawnPoints["main"].facing;
+		character.immovable = true;
 		add(character);
 	}
 	
@@ -75,10 +80,8 @@ function update(){
 	for (name=>tilemap in tilemaps) {
 		if(tilemapCollisions.exists(name) && tilemapCollisions.get(name) == true) FlxG.collide(characters[0], tilemap);
 	}
-	for (spr in sprites) {
-		if(spr.collideMode == "push") FlxG.collide(spr, characters[0]);
-		if(spr.collideMode == "solid") FlxG.collide(characters[0], spr);
-	}
+	for (spr in sprites) if (spr.collision != "")
+		makeObjectsCollide(spr.sprite, characters[0]);
 	members.sort((obj1, obj2) -> {
 		if ((obj1.y) < (obj2.y))
 			return -1;
@@ -113,9 +116,9 @@ function loadRoom(roomName){
 				tilesets.set(name, tileset);
 			case "sprite":
 				var name = element.get("name");
-				var sprite = createSpriteFromXMLElement(element);
-				add(sprite);
-				sprites.set(name, sprite);
+				var spr = createSpriteFromXMLElement(element);
+				add(spr.sprite);
+				sprites.set(name, spr);
 			case "spawn":
 				var name = element.get("name");
 				var pos = {
@@ -172,12 +175,17 @@ function parseTilemapData(str, width)
 }
 
 function createSpriteFromXMLElement(element) {
-	var spr = new OverworldSprite();
-	spr.immovable = false;
+	var spr = new FunkinSprite();
 	spr.scale.set(2,2);
 	spr.updateHitbox();
 	if (element.exists("path")) spr.frames = Paths.getFrames(element.get("path"));
-	if (element.exists("collideMode")) spr.collideMode = element.get("collideMode");
+	var collideMode = "";
+	if (element.exists("collideMode")) {
+		collideMode = element.get("collideMode");
+		if(collideMode == "solid") spr.immovable = true;
+		else if(collideMode == "push") spr.immovable = false;
+		else collideMode = "";
+	}
 	if (element.exists("x")) spr.x = Std.parseFloat(element.get("x"))*2;
 	if (element.exists("y")) spr.y = Std.parseFloat(element.get("y"))*2;
 	if (element.exists("scroll")) spr.scrollFactor.set(Std.parseFloat(element.get("scroll")), Std.parseFloat(element.get("scroll")));
@@ -210,7 +218,7 @@ function createSpriteFromXMLElement(element) {
 		spr.addOffset(anim.get("name"), anim.exists("x") ? -Std.parseFloat(anim.get("x")) : 0, anim.exists("y") ? -Std.parseFloat(anim.get("y")) : 0);
 		spr.playAnim("idle");
 	}
-	return spr;
+	return {sprite: spr, collision: collideMode};
 }
 
 /**
@@ -224,8 +232,3 @@ function createSpriteFromXMLElement(element) {
  * [] Save data system
  * [] Fix Party's Hitbox
  */
-
-class OverworldSprite extends FunkinSprite {
-	public var collideMode:String = "none";
-
-}
