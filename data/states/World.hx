@@ -1,6 +1,7 @@
 import flixel.text.FlxTextBorderStyle;
 import Xml;
 import flixel.util.FlxSort;
+import flixel.FlxObject;
 
 using StringTools;
 
@@ -25,6 +26,11 @@ public var roomWidth = 0;
 public var roomHeight = 0;
 public var tileWidth = 0;
 public var tileHeight = 0;
+
+function overlap(a, b) {
+	for (pos in [[a.x, a.y], [a.x+(a.width-1), a.y], [a.x, a.y+(a.height-1)], [a.x+(a.width-1), a.y+(a.height-1)]]) {
+	}
+}
 
 function create(){
 	loadRoom("test");
@@ -221,4 +227,5 @@ function createSpriteFromXMLElement(element) {
 
 class OverworldSprite extends FunkinSprite {
 	public var collideMode:String = "none";
+
 }
