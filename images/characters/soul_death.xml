@@ -1,6 +1,9 @@
-<?xml version='1.0' encoding='utf-8'?>
-<TextureAtlas imagePath="soul_death.png">
-<SubTexture name="soulbreak0000" x="0" y="0" width="56" height="56" frameX="-8" frameY="-8" frameWidth="30" frameHeight="30" />
-<SubTexture name="soulbreak0001" x="56" y="0" width="60" height="56" frameX="-6" frameY="-8" frameWidth="30" frameHeight="30" />
-<SubTexture name="breakidle0000" x="56" y="0" width="60" height="56" frameX="-6" frameY="-8" frameWidth="30" frameHeight="30" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Tex-Packer-EX v0.6.8 https://strawberrysage.github.io/tex-packer-ex
+-->
+<TextureAtlas imagePath="soul_death.png" width="36" height="16">
+  <SubTexture name="breakidle0000" x="0" y="0"  width="20" height="16" frameX="-6" frameY="-8" frameWidth="30" frameHeight="30"/>
+  <SubTexture name="soulbreak0000" x="20" y="0"  width="16" height="16" frameX="-8" frameY="-8" frameWidth="30" frameHeight="30"/>
+  <SubTexture name="soulbreak0001" x="0" y="0"  width="20" height="16" frameX="-6" frameY="-8" frameWidth="30" frameHeight="30"/>
 </TextureAtlas>
