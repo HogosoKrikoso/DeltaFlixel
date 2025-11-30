@@ -519,7 +519,7 @@ function update() {
 				if (box.accuracy >= 0.95)
 					box.bar.color = FlxColor.YELLOW;
 				if (box.accuracy >= 0)
-					tensionPoints += 24;
+					tensionPoints += 10*box.accuracy;
 				playSound("slash", true);
 				new FlxTimer().start(0.32, () -> {
 					if (box.accuracy > 0) {
@@ -543,13 +543,12 @@ function update() {
 						character.choices = [0,0,0,0,0,0];
 					}
 					timerThatRunsWhenTheFightThingEnds = null;
+					for (box in fightBoxes) {
+				    	box.canUpdate = false;
+					    box.alpha = 0;
+				    }
 				});
 			}
-		}
-	}else{
-		for (box in fightBoxes) {
-			if(box.canUpdate) box.canUpdate = false;
-			if(box.alpha == 0) box.alpha = 0;
 		}
 	}
 	for (i=>character in characters) {
@@ -694,4 +693,5 @@ public function setPartyPosition(x, y, y_separation) {
 public function setEnemiesPosition(x, y, y_separation) {
 	enemy_x = x;
 	for (i=>enemy in enemies) enemy.y = y + ((y_separation/enemies.length) * (enemies.length < 2 ? 0.25 : i));
+
 }
