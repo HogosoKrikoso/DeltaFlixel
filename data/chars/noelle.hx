@@ -13,5 +13,5 @@ var character = new DeltaCharacter("Noelle", "Noelle", "characters/noelle", [
 		func: () -> {},
 	},
 ], 0, 0);
-characters.push(character);*/
+script_return(character);*/
 // unfinished

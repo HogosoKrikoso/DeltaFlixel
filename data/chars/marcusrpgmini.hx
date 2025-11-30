@@ -20,6 +20,6 @@ var character = new DeltaCharacter("Marcus", "marcusrpgmini", "characters/marcus
 		},
 	},
 ], 0, 0);
-characters.push(character);*/
+script_return(character);*/
 // marcus esta obsoleto por el momento
 // mañana lo arreglo

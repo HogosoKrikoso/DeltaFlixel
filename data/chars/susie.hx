@@ -121,4 +121,4 @@ var character = new DeltaCharacter({
 		},
 	],
 });
-characters.push(character);
+script_return(character);
