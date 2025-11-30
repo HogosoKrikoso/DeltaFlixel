@@ -16,12 +16,16 @@ import deltaflixel.objects.DeltaCharacter;
 import deltaflixel.objects.DeltaEnemy;
 import deltaflixel.objects.BattleButton;
 import deltaflixel.objects.FightBox;
-public var onBattle:Bool = true;
 
-importScript("data/scripts/eventSystem");
-	
+scripts = Reflect.hasField(data, "scripts") ? data.scripts : "none";
+_characters = Reflect.hasField(data, "characters") ? data.characters : "none";
+_enemies = Reflect.hasField(data, "enemies") ? data.enemies : "none";
+
 public var characters:Array = [];
 public var enemies:Array = [];
+
+var enemy_x:Float;
+var player_x:Float = 275;
 
 var turn:Int = 0;
 var state = "actions";
@@ -74,14 +78,16 @@ public function doTextOptions(stuff) {
 
 function create() {
 	
+	enemy_x = FlxG.width - 320;
+	
 	gridBack = new FlxBackdrop(Paths.image("deltaruneBackground"));
-	gridBack.velocity.set(30, 30);
+	gridBack.velocity.set(-gridBack.width/2, -gridBack.height/2);
 	gridBack.alpha = 0.5;
 	gridBack.cameras = [overworldBack];
 	add(gridBack);
 	
 	grid = new FlxBackdrop(Paths.image("deltaruneBackground"));
-	grid.velocity.set(-30, -30);
+	grid.velocity.set(grid.width/2, grid.height/2);
 	grid.cameras = [overworldBack];
 	add(grid);
 	
@@ -196,29 +202,31 @@ function create() {
 	soul.cameras = [camUI];
 	add(soul);
 	
-	/*if (chars != null) 
-	characters = chars;
-	else {*/
-		importScript("data/chars/kris");
-		importScript("data/chars/susie");
-		importScript("data/chars/ralsei");
-		importScript("data/chars/marcusrpgmini");
-	//}
+	if (_characters != "none") 
+		characters = _characters;
+	else {
+		characters = [
+			require("data/chars/kris"),
+			require("data/chars/susie"),
+			require("data/chars/ralsei"),
+		];
+	}
 	
-	/*if (_enemies != null) 
+	if (_enemies != "none") 
 		enemies = _enemies;
-	else {*/
-		importScript("data/enemies/cheese");
-	//}
+	else {
+		enemies = [
+			require("data/enemies/cheese"),
+		];
+	}
 	
 	eventName = "startup";
 	events[eventName] = [
 		() -> doTextStuff("* Cheese.", false, true, "default", null, 0.05),
 	];
 	handleEvent();
-		
-	var i = 0;
-	for (character in characters) {
+	
+	for (i=>character in characters) {
 		character.y = 150 + ((400/characters.length) * (characters.length < 2 ? 0.25 : i));
 		character.camera = overworldFront;
 		add(character);
@@ -229,15 +237,16 @@ function create() {
 		add(box.box);
 		add(box.bar);
 		fightBoxes.push(box);
-		i += 1;
 	}
-	for (enemy in enemies) if (enemy != null) {
+	for (i=>enemy in enemies) {
 		enemy.camera = overworldFront;
 		enemy.y = 150 + ((400/enemies.length) * (enemies.length < 2 ? 0.25 : i));
 		add(enemy);
 	}
 	
 	playMusic("RudeBuster", 0.5, true, true);
+	
+	if (scripts != "none") for (path in scripts) importScript(path);
 }
 
 public function changeAction(number:Int = 0){
@@ -298,9 +307,7 @@ function update() {
 			tpText.color = FlxColor.WHITE;
 		}
 	}
-	if (tpBar != null && tpBar.value != null) {
-		//tpBar.value = CoolUtil.fpsLerp(tpBar.value, tensionPoints, 0.1);
-	}
+	//tpBar.value = CoolUtil.fpsLerp(tpBar.value, tensionPoints, 0.1);
 	for (i=>item in groupMenuItems) {
 		item.x = ((FlxG.width/2) - (40*groupMenuItems.length)) + (80*i);
 		item.y = hudBase.y - 75;
@@ -506,10 +513,8 @@ function update() {
 			box.canUpdate = characters[i].choices[0] == 0;
 			box.canPress = (i == fightTurn);
 			var enemy = enemies[characters[i].choices[1]];
-			if (enemy.hp <= 0)
-				characters[i].choices[0] = -1;
-			if (i == fightTurn && characters[i].choices[0] != 0)
-				fightTurn += 1;
+			if (enemy.hp <= 0) characters[i].choices[0] = -1;
+			if (i == fightTurn && characters[i].choices[0] != 0) fightTurn += 1;
 			if (i == fightTurn && box.pressed) {
 				if (box.accuracy >= 0.95)
 					box.bar.color = FlxColor.YELLOW;
@@ -543,13 +548,16 @@ function update() {
 		}
 	}else{
 		for (box in fightBoxes) {
-			box.canUpdate = false;
-			box.alpha = 0;
+			if(box.canUpdate) box.canUpdate = false;
+			if(box.alpha == 0) box.alpha = 0;
 		}
 	}
 	for (i=>character in characters) {
-		character.x = 275 + FlxG.random.float(-character.shake,character.shake);
-		if (character.shake > 0) character.shake -= 0.1;
+		if (character.x != player_x) character.x = player_x;
+		if (character.shake > 0) {
+			enemy.x += FlxG.random.float(-character.shake,character.shake);
+			character.shake -= 0.25;
+		}
 		character.hp = Math.min(character.hp, character.maxHP);
 	}
 	for (i=>enemy in enemies) {
@@ -557,14 +565,17 @@ function update() {
 			if (!enemy.tweened) {
 				enemy.playAnim("dead");
 				new FlxTimer().start(0.5, (x) -> {
-					if (enemy != null) FlxTween.tween(enemy, {x: FlxG.width*1.1}, 0.32);
+					if (enemy != null) FlxTween.tween(enemy, {x: FlxG.width*1.1}, 0.2);
 				});
 				enemy.tweened = true;
 			}
 		} else {
 			enemy.tweened = false;
-			enemy.x = (FlxG.width - 320) + FlxG.random.float(-enemy.shake,enemy.shake);
-			if (enemy.shake > 0) enemy.shake -= 0.25;
+			if (enemy.x != enemy_x) enemy.x = enemy_x;
+			if (enemy.shake > 0) {
+				enemy.x += FlxG.random.float(-enemy.shake,enemy.shake);
+				enemy.shake -= 0.25;
+			}
 		}
 		enemy.hp = Math.min(enemy.hp, enemy.maxHP);
 	}
@@ -675,5 +686,12 @@ public function removeFromArray(id, array) {
 	return t;
 }
 
-/*if (scripts != null) for (path in scripts)
-	importScript(path);*/
+public function setPartyPosition(x, y, y_separation) {
+	player_x = x;
+	for (i=>character in characters) character.y = y + ((y_separation/characters.length) * (characters.length < 2 ? 0.25 : i));
+}
+
+public function setEnemiesPosition(x, y, y_separation) {
+	enemy_x = x;
+	for (i=>enemy in enemies) enemy.y = y + ((y_separation/enemies.length) * (enemies.length < 2 ? 0.25 : i));
+}

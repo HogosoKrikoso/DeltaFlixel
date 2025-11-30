@@ -5,7 +5,11 @@ import flixel.FlxObject;
 
 using StringTools;
 
-importScript("data/scripts/eventSystem");
+_characters = Reflect.hasField(data, "_characters") ? data._characters : "none";
+
+public var roomName = Reflect.hasField(data, "_room") ? data._room : "test";
+
+public var spawnID = Reflect.hasField(data, "_spawn") ? data._spawn : "main";
 
 public var characters = [];
 
@@ -36,17 +40,27 @@ function objectsOverlap(a, b) {
 
 function makeObjectsCollide(a, b) if (objectsOverlap(a, b)) FlxObject.separate(a, b);
 
+public function gotoRoom(room, spawn) FlxG.switchState(new ModState("World", {
+	_room = room,
+	_spawn = spawn,
+	_characters = characters,
+}));
+
 function create(){
-	loadRoom("test");
+	loadRoom(roomName);
 	
-	importScript("data/chars/kris");
-	importScript("data/chars/ralsei");
+	if (_characters != "none") characters = _characters;
+	else {
+		characters = [
+			require("data/chars/kris"),
+			require("data/chars/ralsei"),
+		];
+	}
 	
 	for (i=>character in characters) {
-		character.x = spawnPoints["main"].x;
-		character.y = spawnPoints["main"].y-(i*0.001);
-		character.facing = spawnPoints["main"].facing;
-		character.immovable = true;
+		character.x = spawnPoints[spawnID].x;
+		character.y = spawnPoints[spawnID].y-(i*10);
+		character.facing = spawnPoints[spawnID{].facing;
 		add(character);
 	}
 	
@@ -77,11 +91,8 @@ function update(){
 		character.x = FlxMath.bound(character.x, worldBounds[0], worldBounds[2]);
 		character.y = FlxMath.bound(character.y, worldBounds[1], worldBounds[3]);
 	}
-	for (name=>tilemap in tilemaps) {
-		if(tilemapCollisions.exists(name) && tilemapCollisions.get(name) == true) FlxG.collide(characters[0], tilemap);
-	}
-	for (spr in sprites) if (spr.collision != "")
-		makeObjectsCollide(spr.sprite, characters[0]);
+	for (name=>tilemap in tilemaps) if(tilemapCollisions.exists(name) && tilemapCollisions.get(name) == true) FlxG.collide(tilemap, characters[0]);
+	for (spr in sprites) if(spr.collideMode != "") makeObjectsCollide(characters[0], spr);
 	members.sort((obj1, obj2) -> {
 		if ((obj1.y) < (obj2.y))
 			return -1;
@@ -117,7 +128,7 @@ function loadRoom(roomName){
 			case "sprite":
 				var name = element.get("name");
 				var spr = createSpriteFromXMLElement(element);
-				add(spr.sprite);
+				add(spr);
 				sprites.set(name, spr);
 			case "spawn":
 				var name = element.get("name");
@@ -145,8 +156,8 @@ function loadRoom(roomName){
 					tile.immovable = true;
 					tile.setGraphicSize(tileWidth, tileHeight);
 					tile.updateHitbox();
-					tile.width = tileWidth;
-					tile.height = tileHeight;
+					tile.offset.x = tileWidth*0.5;
+					tile.offset.y = -tileHeight*0.5;
 					group.add(tile);
 				}
 				add(group);
@@ -175,7 +186,7 @@ function parseTilemapData(str, width)
 }
 
 function createSpriteFromXMLElement(element) {
-	var spr = new FunkinSprite();
+	var spr = new OverworldSprite();
 	spr.scale.set(2,2);
 	spr.updateHitbox();
 	if (element.exists("path")) spr.frames = Paths.getFrames(element.get("path"));
@@ -185,6 +196,7 @@ function createSpriteFromXMLElement(element) {
 		if(collideMode == "solid") spr.immovable = true;
 		else if(collideMode == "push") spr.immovable = false;
 		else collideMode = "";
+		spr.collideMode = collideMode;
 	}
 	if (element.exists("x")) spr.x = Std.parseFloat(element.get("x"))*2;
 	if (element.exists("y")) spr.y = Std.parseFloat(element.get("y"))*2;
@@ -196,7 +208,7 @@ function createSpriteFromXMLElement(element) {
 	if (element.exists("skewy")) spr.skew.y = Std.parseFloat(element.get("skewy"));
 	if (element.exists("antialiasing")) spr.antialiasing = element.get("antialiasing") == "true";
 	if (element.exists("width")) spr.width = Std.parseFloat(element.get("width"))*2;
-	if (element.exists("height")) spr.width = Std.parseFloat(element.get("height"))*2;
+	if (element.exists("height")) spr.height = Std.parseFloat(element.get("height"))*2;
 	if (element.exists("scale")) spr.scale.set(Std.parseFloat(element.get("scale"))*2, Std.parseFloat(element.get("scale"))*2);
 	if (element.exists("scalex")) spr.scale.x = Std.parseFloat(element.get("scalex"))*2;
 	if (element.exists("scaley")) spr.scale.y = Std.parseFloat(element.get("scaley"))*2;
@@ -218,7 +230,7 @@ function createSpriteFromXMLElement(element) {
 		spr.addOffset(anim.get("name"), anim.exists("x") ? -Std.parseFloat(anim.get("x")) : 0, anim.exists("y") ? -Std.parseFloat(anim.get("y")) : 0);
 		spr.playAnim("idle");
 	}
-	return {sprite: spr, collision: collideMode};
+	return spr;
 }
 
 /**
@@ -232,3 +244,7 @@ function createSpriteFromXMLElement(element) {
  * [] Save data system
  * [] Fix Party's Hitbox
  */
+
+class OverworldSprite extends FunkinSprite {
+	public var collideMode:String = "none";
+}
