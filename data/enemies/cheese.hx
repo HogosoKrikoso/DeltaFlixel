@@ -22,4 +22,4 @@ var enemy = new DeltaEnemy("Cheese", "characters/cheese", [
 		},
 	],
 ]);
-enemies.push(enemy);
+script_return(enemy);
