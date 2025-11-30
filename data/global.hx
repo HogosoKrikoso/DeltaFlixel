@@ -8,8 +8,12 @@ import openfl.system.Capabilities;
 import flixel.util.FlxSave;
 import funkin.backend.assets.ModsFolder;
 
+importScript("data/scripts/EventSystem");
+
 public static var DeltaFlixelOptions:FlxSave;
 public static var DeltaFlixelControls:FlxSave;
+public static var gameSaves:Array<FlxSave> = [];
+public static var currentSave:Int = 0;
 
 var redirectStates:Map<FlxState, String> = [
 	//BetaWarningState => "Play",
@@ -48,6 +52,11 @@ function new() {
 	DeltaFlixelOptions.bind("deltaflixel");
 	DeltaFlixelControls = new FlxSave();
 	DeltaFlixelControls.bind("deltaflixel_mobile");
+	for (i in 0...3) {
+		save = new FlxSave();
+		save.bind(ModsFolder.currentModFolder + "_save_" + i);
+		gameSaves.push(save);
+	}
 	for (key in defaultSettings.keys()) if (!Reflect.hasField(DeltaFlixelOptions.data, key))
 		Reflect.setField(DeltaFlixelOptions.data, key, defaultSettings[key]);
 	setGameResolution(1280, 960, false);
@@ -127,7 +136,8 @@ function update() {
 	keys.BACK_HOLD = backButton.pressed || FlxG.keys.pressed.X;
 	keys.MENU = menuButton.justPressed || FlxG.keys.justPressed.C;
 	keys.MENU_HOLD = menuButton.pressed || FlxG.keys.pressed.C;
-	FlxG.updateFramerate = FlxG.drawFramerate = DeltaFlixelOptions.thirtyLags ? 30 : 60;
+	FlxG.set_updateFramerate(DeltaFlixelOptions.thirtyLags ? 30 : 60);
+	FlxG.set_drawFramerate(DeltaFlixelOptions.thirtyLags ? 30 : 60);
 }
 
 function destroy() {
@@ -135,7 +145,8 @@ function destroy() {
 		joystick.stopJoystick();
 		for (btn in [acceptButton, backButton, menuButton, joystick]) btn.destroy();
 	#end
-	FlxG.updateFramerate = FlxG.drawFramerate = Options.framerate;
+	FlxG.set_updateFramerate(Options.framerate);
+	FlxG.set_drawFramerate(Options.framerate);
 	setGameResolution(1280, 720);
 }
 
@@ -174,15 +185,21 @@ public static function updateControlsPosition() {
 	menuButton.setPosition(btnPos.menu[0], btnPos.menu[1]);
 }
 
-public static function reverseMin(v, max){
-	if(v > max)
-		return max + (max - v);
-	else
-		return v;
-}
+public static function reverseMin(v, max) if(v > max) return max + (max - v); else return v;
 
 public static function getFPS() return Math.floor(FlxG.rawElapsed == 0 ? 30 : (1 / FlxG.rawElapsed));
 
 public static function getIDFromString(string, array) for (i=>string2 in array) if (string2 == string) return i;
 
 public static function framesDuration(fps, frames) return (1 / fps) * frames;
+
+static var returnVar = null;
+public static function require(path) {
+	importScript(path);
+	if (returnVar != null) {
+		var v = returnVar;
+		returnVar = null;
+		return v;
+	}
+}
+public static function script_return(v) returnVar = v;
