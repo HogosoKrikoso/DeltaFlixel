@@ -60,7 +60,7 @@ function create(){
 	for (i=>character in characters) {
 		character.x = spawnPoints[spawnID].x;
 		character.y = spawnPoints[spawnID].y-(i*10);
-		character.facing = spawnPoints[spawnID{].facing;
+		character.facing = spawnPoints[spawnID].facing;
 		add(character);
 	}
 	
@@ -168,6 +168,8 @@ function loadRoom(roomName){
 		}
 	}
 	if (Assets.exists("data/rooms/" + roomName + ".hx")) importScript("data/rooms/" + roomName);
+    if (roomElement.exists("music")) playMusic(roomElement.get("music"), roomElement.exists("musicVolume") ? Std.parseFloat(roomElement.get("musicVolume")) : 1, true);
+    else FlxG.sound.music.stop();
 }
 
 function parseTilemapData(str, width)
@@ -247,4 +249,5 @@ function createSpriteFromXMLElement(element) {
 
 class OverworldSprite extends FunkinSprite {
 	public var collideMode:String = "none";
+
 }
